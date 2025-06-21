@@ -14,8 +14,11 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your-secret-key-here-change
 db = EnrichmentDatabase()
 
 # You'll need to add your API keys here (kept for fallback)
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', 'your-openai-api-key-here')
-client = OpenAI(api_key=OPENAI_API_KEY)
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+if OPENAI_API_KEY:
+    client = OpenAI(api_key=OPENAI_API_KEY)
+else:
+    client = None
 
 # Add chat routes to the app
 add_chat_routes(app, OPENAI_API_KEY)
@@ -160,6 +163,9 @@ def generate_passive_enrichment_activities_ai(dog_profile):
     """
     
     try:
+        if not client:
+            raise Exception("OpenAI client not available")
+        
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -281,6 +287,9 @@ def generate_enrichment_activities_ai(dog_profile):
     """
     
     try:
+        if not client:
+            raise Exception("OpenAI client not available")
+        
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -346,6 +355,9 @@ def generate_enrichment_activities(dog_profile):
     """
     
     try:
+        if not client:
+            raise Exception("OpenAI client not available")
+        
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[

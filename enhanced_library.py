@@ -19,9 +19,15 @@ class EnhancedActivityLibrary:
     def __init__(self, openai_api_key=None):
         self.db = EnrichmentDatabase()
         api_key = openai_api_key or os.environ.get('OPENAI_API_KEY')
-        if not api_key:
-            raise ValueError("OpenAI API key not found. Set OPENAI_API_KEY environment variable.")
-        self.client = OpenAI(api_key=api_key)
+        if api_key:
+            try:
+                self.client = OpenAI(api_key=api_key)
+            except Exception as e:
+                print(f"Warning: Could not initialize OpenAI client: {e}")
+                self.client = None
+        else:
+            print("Warning: No OpenAI API key provided")
+            self.client = None
         
         # Source URLs for enrichment content
         self.sources = {
