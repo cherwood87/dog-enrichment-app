@@ -10,6 +10,9 @@ class DogOnlyImageManager:
     def __init__(self):
         # VERIFIED DOG-ONLY IMAGES - Each URL manually checked
         self.verified_dog_images = [
+            # HERO IMAGE - Your custom digging dog (Instinctual Enrichment)
+            '/static/images/hero-dog-digging.jpg',  # Your custom digging dog image
+            
             # Border Collies & Smart Dogs (Mental Enrichment)
             'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',  # Border Collie with puzzle
             'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',  # Border Collie thinking
@@ -65,13 +68,20 @@ class DogOnlyImageManager:
         if context in self.page_assignments:
             return self.page_assignments[context]
         
-        # Find an unused image
-        available_images = [img for img in self.verified_dog_images if img not in self.used_images]
+        # Special case: Always use your custom digging dog for hero
+        if context == 'hero':
+            hero_image = '/static/images/hero-dog-digging.jpg'
+            self.page_assignments[context] = hero_image
+            self.used_images.add(hero_image)
+            return hero_image
+        
+        # Find an unused image (excluding the hero image for other contexts)
+        available_images = [img for img in self.verified_dog_images[1:] if img not in self.used_images]  # Skip hero image
         
         # If all images used, reset but keep existing assignments
         if not available_images:
             self.used_images = set(self.page_assignments.values())
-            available_images = [img for img in self.verified_dog_images if img not in self.used_images]
+            available_images = [img for img in self.verified_dog_images[1:] if img not in self.used_images]
         
         # Select and assign image
         if available_images:
@@ -81,7 +91,7 @@ class DogOnlyImageManager:
             return selected_image
         
         # Fallback (should never happen)
-        return self.verified_dog_images[0]
+        return self.verified_dog_images[1]  # Skip hero image
     
     def get_multiple_unique_images(self, count: int, prefix: str = "") -> List[str]:
         """Get multiple unique dog images"""
