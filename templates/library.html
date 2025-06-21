@@ -567,6 +567,255 @@
             box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
         }
         
+        /* Chat Modal Styles */
+        .chat-modal {
+            display: none;
+            position: fixed;
+            z-index: 1500;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+        }
+        
+        .chat-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            margin: 3% auto;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 500px;
+            height: 80vh;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 25px 25px 0 0;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .chat-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .chat-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 5px 0 0 0;
+        }
+        
+        .chat-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .chat-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .chat-message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+        
+        .chat-message.user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        
+        .chat-message.ai {
+            background: rgba(102, 126, 234, 0.1);
+            color: #333;
+            align-self: flex-start;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .chat-message.system {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+            align-self: center;
+            text-align: center;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            font-style: italic;
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 12px 16px;
+            border-radius: 18px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+            flex-shrink: 0;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            max-height: 100px;
+            min-height: 44px;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .chat-send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .chat-send-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .chat-send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .suggested-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .suggestion-btn {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .suggestion-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .activity-suggestion {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-suggestion:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .activity-suggestion h4 {
+            color: #667eea;
+            font-size: 14px;
+            margin: 0 0 5px 0;
+        }
+        
+        .activity-suggestion p {
+            color: #666;
+            font-size: 12px;
+            margin: 0;
+        }
+        
         /* Responsive */
         @media (max-width: 480px) {
             .container {
@@ -877,6 +1126,47 @@
         💬 Need Help?
     </div>
 
+    <!-- AI Chat Modal -->
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-content">
+            <div class="chat-header">
+                <span class="chat-close" onclick="closeChat()">&times;</span>
+                <h3 class="chat-title">🐕 AI Enrichment Expert</h3>
+                <p class="chat-subtitle">Get personalized advice for your dog</p>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message system">
+                    👋 Hi! I'm your AI enrichment specialist. I can help with activity suggestions, training tips, and safety advice. What would you like to know about your dog?
+                </div>
+                
+                <div class="suggested-questions" id="suggestedQuestions">
+                    <button class="suggestion-btn" onclick="askSuggestion('I have a 4 month old puppy who swallows everything, what activities are safe?')">Safe puppy activities</button>
+                    <button class="suggestion-btn" onclick="askSuggestion('My dog is destructive when I leave, what can help?')">Destructive behavior help</button>
+                    <button class="suggestion-btn" onclick="askSuggestion('I need 15-minute mental enrichment ideas')">Quick mental activities</button>
+                    <button class="suggestion-btn" onclick="askSuggestion('How do I make this activity easier for my senior dog?')">Senior dog modifications</button>
+                </div>
+                
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <div class="chat-input-container">
+                    <textarea class="chat-input" id="chatInput" placeholder="Ask about enrichment activities, training tips, or safety concerns..." rows="1"></textarea>
+                    <button class="chat-send-btn" id="chatSendBtn" onclick="sendMessage()">
+                        ➤
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Get all activities data for the modal
         const activitiesData = {
@@ -924,6 +1214,23 @@
                         section.style.display = 'none';
                     }
                 });
+        
+        // Test chat connection on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Test AI chat availability
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'connectivity_test' })
+            }).catch(() => {
+                // If chat API is not available, update button text
+                const chatBtn = document.querySelector('.floating-chat-btn');
+                if (chatBtn) {
+                    chatBtn.innerHTML = '💬 Browse Activities';
+                    chatBtn.onclick = () => {
+                        alert('AI chat is temporarily unavailable.\n\nBrowse our activity library above for hundreds of enrichment ideas!');
+                    };
+                }
             });
         });
 
@@ -1034,10 +1341,180 @@
             }
         });
 
-        // Placeholder chat function
+        // Chat functionality
+        let conversationHistory = [];
+        let isTyping = false;
+        
         function openChat() {
-            alert('Chat feature coming soon!\n\nFor now, click on any activity to see detailed instructions.');
+            document.getElementById('chatModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Focus on input after modal opens
+            setTimeout(() => {
+                document.getElementById('chatInput').focus();
+            }, 100);
         }
+        
+        function closeChat() {
+            document.getElementById('chatModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        function askSuggestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+            
+            // Hide suggestions after first use
+            document.getElementById('suggestedQuestions').style.display = 'none';
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message || isTyping) return;
+            
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            input.value = '';
+            
+            // Show typing indicator
+            showTyping();
+            
+            try {
+                // Send to AI backend
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        history: conversationHistory
+                    })
+                });
+                
+                const data = await response.json();
+                
+                hideTyping();
+                
+                if (data.success) {
+                    // Add AI response
+                    addMessageToChat(data.response, 'ai');
+                    
+                    // Add activity suggestions if provided
+                    if (data.relevant_activities && data.relevant_activities.length > 0) {
+                        addActivitySuggestions(data.relevant_activities);
+                    }
+                    
+                    // Update conversation history
+                    conversationHistory.push(
+                        { role: 'user', content: message },
+                        { role: 'assistant', content: data.response }
+                    );
+                    
+                    // Keep only last 10 messages for context
+                    if (conversationHistory.length > 10) {
+                        conversationHistory = conversationHistory.slice(-10);
+                    }
+                    
+                } else {
+                    addMessageToChat('Sorry, I\'m having trouble right now. Please try rephrasing your question or check back later.', 'system');
+                }
+                
+            } catch (error) {
+                hideTyping();
+                console.error('Chat error:', error);
+                addMessageToChat('Sorry, I\'m having connection issues. Please try again in a moment.', 'system');
+            }
+        }
+        
+        function addMessageToChat(message, type) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type}`;
+            messageDiv.textContent = message;
+            
+            // Insert before typing indicator
+            const typingIndicator = document.getElementById('typingIndicator');
+            messagesContainer.insertBefore(messageDiv, typingIndicator);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function addActivitySuggestions(activities) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            activities.forEach(activity => {
+                const suggestionDiv = document.createElement('div');
+                suggestionDiv.className = 'activity-suggestion';
+                suggestionDiv.innerHTML = `
+                    <h4>${activity.name}</h4>
+                    <p>${activity.description || activity.category + ' enrichment activity'}</p>
+                `;
+                
+                suggestionDiv.onclick = () => {
+                    closeChat();
+                    showActivityModal(activity.name);
+                };
+                
+                const typingIndicator = document.getElementById('typingIndicator');
+                messagesContainer.insertBefore(suggestionDiv, typingIndicator);
+            });
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function showTyping() {
+            isTyping = true;
+            document.getElementById('typingIndicator').style.display = 'block';
+            document.getElementById('chatSendBtn').disabled = true;
+            
+            // Scroll to bottom
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function hideTyping() {
+            isTyping = false;
+            document.getElementById('typingIndicator').style.display = 'none';
+            document.getElementById('chatSendBtn').disabled = false;
+        }
+        
+        // Enter key to send message
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatInput = document.getElementById('chatInput');
+            
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Auto-resize textarea
+            chatInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            });
+        });
+        
+        // Close chat with escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && document.getElementById('chatModal').style.display === 'block') {
+                closeChat();
+            }
+        });
+        
+        // Close chat when clicking outside
+        window.addEventListener('click', (event) => {
+            const chatModal = document.getElementById('chatModal');
+            if (event.target === chatModal) {
+                closeChat();
+            }
+        });
     </script>
 </body>
 </html>
