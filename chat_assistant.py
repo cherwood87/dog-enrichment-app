@@ -7,14 +7,18 @@ activity breakdowns, and personalized recommendations.
 """
 
 from flask import request, jsonify, session
-from openai import OpenAI
+import openai
 import json
 import sqlite3
 from enrichment_database import EnrichmentDatabase
 
 class EnrichmentChatAssistant:
     def __init__(self, openai_api_key):
-        self.client = OpenAI(api_key=openai_api_key)
+        if openai_api_key:
+            openai.api_key = openai_api_key
+            self.client = openai
+        else:
+            self.client = None
         self.db = EnrichmentDatabase()
     
     def get_relevant_activities(self, user_query: str, limit: int = 3):
@@ -165,14 +169,21 @@ class EnrichmentChatAssistant:
         messages.append({"role": "user", "content": user_message})
         
         try:
-            response = self.client.chat.completions.create(
+            if not self.client:
+                return {
+                    'success': False,
+                    'error': "OpenAI API not available",
+                    'relevant_activities': relevant_activities[:2] if relevant_activities else []
+                }
+            
+            response = self.client.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=messages,
                 max_tokens=800,
                 temperature=0.7
             )
             
-            ai_response = response.choices[0].message.content
+            ai_response = response['choices'][0]['message']['content']
             
             return {
                 'success': True,
@@ -238,7 +249,14 @@ class EnrichmentChatAssistant:
         """
         
         try:
-            response = self.client.chat.completions.create(
+            if not self.client:
+                return {
+                    'success': False,
+                    'error': f"OpenAI API not available for activity breakdown.",
+                    'activity': activity
+                }
+            
+            response = self.client.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are a dog training expert. Break down activities into the simplest possible steps with clear success criteria."},
@@ -251,7 +269,7 @@ class EnrichmentChatAssistant:
             return {
                 'success': True,
                 'activity': activity,
-                'breakdown': response.choices[0].message.content
+                'breakdown': response['choices'][0]['message']['content']
             }
             
         except Exception as e:
