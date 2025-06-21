@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Activities - Dog Enrichment App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .pdf-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+
+        .pdf-info h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .pdf-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .pdf-list li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .pdf-list li:before {
+            content: "📄";
+            position: absolute;
+            left: 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .dynamic-list {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: #fafafa;
+        }
+
+        .list-item {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .list-item input {
+            flex: 1;
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-add {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #229954;
+            transform: translateY(-1px);
+        }
+
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-remove:hover {
+            background: #c0392b;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            margin-right: 15px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: #4facfe;
+            background: #f8f9fa;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .checkbox-item.checked {
+            border-color: #4facfe;
+            background: #e3f2fd;
+        }
+
+        .preview {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .preview h3 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .preview-item {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+
+        .preview-label {
+            font-weight: bold;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-content {
+            margin-top: 5px;
+            color: #495057;
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .action-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐕 Import Activities</h1>
+            <p>Add enrichment activities from your PDFs to the database</p>
+        </div>
+
+        <div class="form-container">
+            <a href="/" class="back-link">← Back to App</a>
+
+            <div class="success-message" id="successMessage"></div>
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="pdf-info">
+                <h3>📁 Your PDF Files</h3>
+                <p>Copy activities from your PDFs and add them using this form:</p>
+                <ul class="pdf-list">
+                    <li>Environmental Enrichment.pdf</li>
+                    <li>Mental Enrichment Games.pdf</li>
+                    <li>Passive Enrichment.pdf</li>
+                    <li>Physical Enrichment.pdf</li>
+                    <li>Social Enrichment.pdf</li>
+                </ul>
+            </div>
+
+            <form id="activityForm">
+                <div class="form-group">
+                    <label for="name">Activity Name <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" required placeholder="Enter a descriptive name for the activity">
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category <span class="required">*</span></label>
+                    <select id="category" name="category" required>
+                        <option value="">Select a category...</option>
+                        <option value="Mental">Mental Enrichment</option>
+                        <option value="Physical">Physical Enrichment</option>
+                        <option value="Social">Social Enrichment</option>
+                        <option value="Environmental">Environmental Enrichment</option>
+                        <option value="Instinctual">Instinctual Enrichment</option>
+                        <option value="Passive">Passive Enrichment</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Brief description of what this activity involves..."></textarea>
+                    <div class="help-text">A short explanation of what this enrichment activity is about</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Materials Needed</label>
+                    <div class="dynamic-list" id="materialsContainer">
+                        <div class="list-item">
+                            <input type="text" name="materials[]" placeholder="e.g., Kong toy, peanut butter, treats">
+                            <button type="button" class="btn btn-add" onclick="addMaterial()">Add Material</button>
+                        </div>
+                    </div>
+                    <div class="help-text">List all items needed for this activity</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Step-by-Step Instructions</label>
+                    <div class="dynamic-list" id="instructionsContainer">
+                        <div class="list-item">
+                            <input type="text" name="instructions[]" placeholder="Step 1: ...">
+                            <button type="button" class="btn btn-add" onclick="addInstruction()">Add Step</button>
+                        </div>
+                    </div>
+                    <div class="help-text">Clear instructions for how to set up and do this activity</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="safety_notes">Safety Notes</label>
+                    <textarea id="safety_notes" name="safety_notes" placeholder="Important safety considerations and warnings..."></textarea>
+                    <div class="help-text">Any safety precautions or things to watch out for</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="estimated_time">Estimated Time</label>
+                    <input type="text" id="estimated_time" name="estimated_time" placeholder="e.g., 15-20 minutes, 30-45 minutes">
+                    <div class="help-text">How long this activity typically takes or keeps the dog occupied</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="difficulty_level">Difficulty Level</label>
+                    <select id="difficulty_level" name="difficulty_level">
+                        <option value="Easy">Easy</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="energy_required">Energy Required from Dog</label>
+                    <select id="energy_required" name="energy_required">
+                        <option value="Very Low">Very Low</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="High">High</option>
+                        <option value="Very High">Very High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="weather_suitable">Weather Suitability</label>
+                    <select id="weather_suitable" name="weather_suitable">
+                        <option value="Any" selected>Any Weather</option>
+                        <option value="Nice weather">Nice Weather Only</option>
+                        <option value="Indoor weather">Indoor Only</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Suitable Breed Sizes</label>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="breed_sizes[]" value="Small" id="size_small">
+                            <label for="size_small">Small (under 25 lbs)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="breed_sizes[]" value="Medium" id="size_medium">
+                            <label for="size_medium">Medium (25-60 lbs)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="breed_sizes[]" value="Large" id="size_large">
+                            <label for="size_large">Large (60-90 lbs)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="breed_sizes[]" value="Giant" id="size_giant">
+                            <label for="size_giant">Giant (over 90 lbs)</label>
+                        </div>
+                        <div class="checkbox-item checked">
+                            <input type="checkbox" name="breed_sizes[]" value="All" id="size_all" checked>
+                            <label for="size_all">All Sizes</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Suitable Age Groups</label>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="age_groups[]" value="Puppy" id="age_puppy">
+                            <label for="age_puppy">Puppy (under 1 year)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="age_groups[]" value="Young adult" id="age_young">
+                            <label for="age_young">Young Adult (1-3 years)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="age_groups[]" value="Adult" id="age_adult">
+                            <label for="age_adult">Adult (3-7 years)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="age_groups[]" value="Senior" id="age_senior">
+                            <label for="age_senior">Senior (7+ years)</label>
+                        </div>
+                        <div class="checkbox-item checked">
+                            <input type="checkbox" name="age_groups[]" value="All" id="age_all" checked>
+                            <label for="age_all">All Ages</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tags">Tags (optional)</label>
+                    <input type="text" id="tags" name="tags" placeholder="e.g., indoor, DIY, food_puzzle, mental_stimulation">
+                    <div class="help-text">Add keywords separated by commas to help categorize this activity</div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-primary" onclick="previewActivity()">Preview Activity</button>
+                    <button type="submit" class="btn btn-success">Add to Database</button>
+                </div>
+            </form>
+
+            <div id="preview" class="preview">
+                <h3>🔍 Activity Preview</h3>
+                <div id="previewContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle checkbox styling
+        document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const item = this.closest('.checkbox-item');
+                if (this.checked) {
+                    item.classList.add('checked');
+                } else {
+                    item.classList.remove('checked');
+                }
+            });
+        });
+
+        function addMaterial() {
+            const container = document.getElementById('materialsContainer');
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = `
+                <input type="text" name="materials[]" placeholder="e.g., Tennis ball, rope toy">
+                <button type="button" class="btn btn-remove" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addInstruction() {
+            const container = document.getElementById('instructionsContainer');
+            const stepNumber = container.children.length + 1;
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = `
+                <input type="text" name="instructions[]" placeholder="Step ${stepNumber}: ...">
+                <button type="button" class="btn btn-remove" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function getFormData() {
+            const form = document.getElementById('activityForm');
+            const formData = new FormData(form);
+            
+            const activity = {};
+            
+            // Basic fields
+            activity.name = formData.get('name');
+            activity.category = formData.get('category');
+            activity.description = formData.get('description');
+            activity.safety_notes = formData.get('safety_notes');
+            activity.estimated_time = formData.get('estimated_time');
+            activity.difficulty_level = formData.get('difficulty_level');
+            activity.energy_required = formData.get('energy_required');
+            activity.weather_suitable = formData.get('weather_suitable');
+            
+            // Arrays
+            activity.materials = formData.getAll('materials[]').filter(m => m.trim());
+            activity.instructions = formData.getAll('instructions[]').filter(i => i.trim());
+            activity.breed_sizes = formData.getAll('breed_sizes[]');
+            activity.age_groups = formData.getAll('age_groups[]');
+            
+            // Tags
+            const tagsStr = formData.get('tags');
+            activity.tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+            
+            return activity;
+        }
+
+        function previewActivity() {
+            const activity = getFormData();
+            
+            if (!activity.name || !activity.category) {
+                showError('Please fill in the required fields (Name and Category) before previewing.');
+                return;
+            }
+            
+            let html = `
+                <div class="preview-item">
+                    <div class="preview-label">Name</div>
+                    <div class="preview-content">${activity.name}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Category</div>
+                    <div class="preview-content">${activity.category}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Description</div>
+                    <div class="preview-content">${activity.description || 'No description provided'}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Materials</div>
+                    <div class="preview-content">${activity.materials.length ? activity.materials.join(', ') : 'No materials specified'}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Instructions</div>
+                    <div class="preview-content">
+                        ${activity.instructions.length ? 
+                            '<ol>' + activity.instructions.map(inst => `<li>${inst}</li>`).join('') + '</ol>' : 
+                            'No instructions provided'
+                        }
+                    </div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Safety Notes</div>
+                    <div class="preview-content">${activity.safety_notes || 'No safety notes provided'}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Estimated Time</div>
+                    <div class="preview-content">${activity.estimated_time || 'Not specified'}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Difficulty</div>
+                    <div class="preview-content">${activity.difficulty_level}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Energy Required</div>
+                    <div class="preview-content">${activity.energy_required}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Weather</div>
+                    <div class="preview-content">${activity.weather_suitable}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Breed Sizes</div>
+                    <div class="preview-content">${activity.breed_sizes.join(', ')}</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">Age Groups</div>
+                    <div class="preview-content">${activity.age_groups.join(', ')}</div>
+                </div>
+                ${activity.tags.length ? `
+                <div class="preview-item">
+                    <div class="preview-label">Tags</div>
+                    <div class="preview-content">${activity.tags.join(', ')}</div>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('previewContent').innerHTML = html;
+            document.getElementById('preview').style.display = 'block';
+            document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            successEl.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+            errorEl.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('activityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const activity = getFormData();
+            
+            if (!activity.name || !activity.category) {
+                showError('Please fill in the required fields: Name and Category');
+                return;
+            }
+            
+            // Send to backend
+            fetch('/import-activity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(activity)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccess(data.message);
+                    document.getElementById('activityForm').reset();
+                    document.getElementById('preview').style.display = 'none';
+                    
+                    // Reset checkbox styling
+                    document.querySelectorAll('.checkbox-item').forEach(item => {
+                        const checkbox = item.querySelector('input[type="checkbox"]');
+                        if (checkbox.checked) {
+                            item.classList.add('checked');
+                        } else {
+                            item.classList.remove('checked');
+                        }
+                    });
+                } else {
+                    showError(data.error || 'An error occurred while adding the activity');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred while adding the activity');
+            });
+        });
+    </script>
+</body>
+</html>

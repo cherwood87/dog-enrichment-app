@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Dog's Enrichment Plan - PawEnrich</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        /* Form Card */
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 32px;
+        }
+        
+        label {
+            display: block;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: inherit;
+            background: white;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 12px;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        select option {
+            padding: 12px;
+            font-size: 1em;
+        }
+        
+        /* Buttons */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 40px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 32px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+        
+        .passive-section {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid #e1e8ed;
+            margin-top: 24px;
+        }
+        
+        .passive-text {
+            color: #666;
+            margin-bottom: 16px;
+            font-size: 1em;
+        }
+        
+        .passive-btn {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+        }
+        
+        .passive-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.4);
+        }
+        
+        /* Back link */
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #2c3e50;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .form-card {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .header p {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Home</a>
+        
+        <div class="header">
+            <h1>Create Your Dog's Enrichment Plan</h1>
+            <p>Tell us about your dog and we'll create personalized activities</p>
+        </div>
+        
+        <div class="form-card">
+            <form action="/generate-activities" method="POST">
+                <div class="form-group">
+                    <label for="breed">What's your dog's breed or size?</label>
+                    <select name="breed" id="breed" required>
+                        <option value="">Select breed or size...</option>
+                        <option value="Small breed (under 25 lbs)" {{ 'selected' if (saved_profile|default({})).get('breed') == 'Small breed (under 25 lbs)' else '' }}>Small breed (under 25 lbs)</option>
+                        <option value="Medium breed (25-60 lbs)" {{ 'selected' if (saved_profile|default({})).get('breed') == 'Medium breed (25-60 lbs)' else '' }}>Medium breed (25-60 lbs)</option>
+                        <option value="Large breed (60-90 lbs)" {{ 'selected' if (saved_profile|default({})).get('breed') == 'Large breed (60-90 lbs)' else '' }}>Large breed (60-90 lbs)</option>
+                        <option value="Giant breed (over 90 lbs)" {{ 'selected' if (saved_profile|default({})).get('breed') == 'Giant breed (over 90 lbs)' else '' }}>Giant breed (over 90 lbs)</option>
+                        <option value="Mixed breed" {{ 'selected' if (saved_profile|default({})).get('breed') == 'Mixed breed' else '' }}>Mixed breed</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">What's your dog's age group?</label>
+                    <select name="age" id="age" required>
+                        <option value="">Select age group...</option>
+                        <option value="Puppy (under 1 year)" {{ 'selected' if (saved_profile|default({})).get('age') == 'Puppy (under 1 year)' else '' }}>Puppy (under 1 year)</option>
+                        <option value="Young adult (1-3 years)" {{ 'selected' if (saved_profile|default({})).get('age') == 'Young adult (1-3 years)' else '' }}>Young adult (1-3 years)</option>
+                        <option value="Adult (3-7 years)" {{ 'selected' if (saved_profile|default({})).get('age') == 'Adult (3-7 years)' else '' }}>Adult (3-7 years)</option>
+                        <option value="Senior (7+ years)" {{ 'selected' if (saved_profile|default({})).get('age') == 'Senior (7+ years)' else '' }}>Senior (7+ years)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="energy_level">What's your dog's energy level?</label>
+                    <select name="energy_level" id="energy_level" required>
+                        <option value="">Select energy level...</option>
+                        <option value="Low energy - prefers calm activities" {{ 'selected' if (saved_profile|default({})).get('energy_level') == 'Low energy - prefers calm activities' else '' }}>Low energy - prefers calm activities</option>
+                        <option value="Moderate energy - enjoys regular exercise" {{ 'selected' if (saved_profile|default({})).get('energy_level') == 'Moderate energy - enjoys regular exercise' else '' }}>Moderate energy - enjoys regular exercise</option>
+                        <option value="High energy - needs lots of stimulation" {{ 'selected' if (saved_profile|default({})).get('energy_level') == 'High energy - needs lots of stimulation' else '' }}>High energy - needs lots of stimulation</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="weather">What's the weather like today?</label>
+                    <select name="weather" id="weather" required>
+                        <option value="">Select weather conditions...</option>
+                        <option value="Nice weather - outdoor activities preferred">Nice weather - outdoor activities preferred</option>
+                        <option value="Indoor weather - need indoor activities">Indoor weather - need indoor activities</option>
+                        <option value="Mixed - indoor and outdoor options">Mixed - indoor and outdoor options</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="enrichment_type">What type of enrichment are you looking for?</label>
+                    <select name="enrichment_type" id="enrichment_type" required>
+                        <option value="">Select enrichment type...</option>
+                        <option value="Mental enrichment - cognitive challenges and problem-solving">Mental Enrichment - Cognitive challenges and problem-solving</option>
+                        <option value="Physical enrichment - exercise and movement activities">Physical Enrichment - Exercise and movement activities</option>
+                        <option value="Social enrichment - interactive bonding activities">Social Enrichment - Interactive bonding activities</option>
+                        <option value="Environmental enrichment - exploration and environmental interaction">Environmental Enrichment - Exploration and environmental interaction</option>
+                        <option value="Instinctual enrichment - natural behaviors like sniffing, foraging, hunting">Instinctual Enrichment - Natural behaviors like sniffing, foraging, hunting</option>
+                        <option value="Mixed enrichment - variety of different activities">Mixed Enrichment - Variety of different activities</option>
+                    </select>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="submit-btn">Generate Personalized Activities</button>
+                    
+                    <div class="passive-section">
+                        <p class="passive-text">Or get quick passive enrichment ideas:</p>
+                        <button type="button" id="passive-btn" class="passive-btn">Get Passive Enrichment Ideas</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('passive-btn').addEventListener('click', function() {
+            // Create a form data object with just the passive enrichment request
+            const formData = new FormData();
+            formData.append('passive_enrichment', 'true');
+            
+            // Get basic dog info if available
+            const breed = document.getElementById('breed').value;
+            const age = document.getElementById('age').value;
+            
+            if (breed) formData.append('breed', breed);
+            if (age) formData.append('age', age);
+            
+            // Submit to passive enrichment endpoint
+            fetch('/generate-passive', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .then(html => {
+                document.body.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Sorry, there was an error generating passive enrichment ideas. Please try again.');
+            });
+        });
+    </script>
+</body>
+</html>

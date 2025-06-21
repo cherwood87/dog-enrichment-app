@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PawEnrich - Personalized Dog Enrichment Activities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        .header {
+            padding: 20px 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #2c3e50;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 80px 0 120px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 400;
+        }
+        
+        .hero-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 24px;
+            margin: 0 auto 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+        }
+        
+        .hero-image img {
+            width: 80%;
+            height: 80%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        
+        .price-tag {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 50px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Cards Grid */
+        .cards-section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 60px;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 64px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 200px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .card h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1em;
+        }
+        
+        /* Feature Cards with Different Colors */
+        .card.mental {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 100%);
+        }
+        
+        .card.physical {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+        }
+        
+        .card.social {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+        }
+        
+        .card.environmental {
+            background: linear-gradient(135deg, rgba(13, 202, 240, 0.1) 0%, rgba(13, 202, 240, 0.05) 100%);
+        }
+        
+        .card.instinctual {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+        }
+        
+        .card.passive {
+            background: linear-gradient(135deg, rgba(111, 66, 193, 0.1) 0%, rgba(111, 66, 193, 0.05) 100%);
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 0;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .step h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+        
+        .step p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Stats Section */
+        .stats {
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .stat {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        /* Final CTA */
+        .final-cta {
+            padding: 80px 0;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .final-cta h2 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+        
+        .final-cta p {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .cta-button.white {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 12px 40px rgba(255, 255, 255, 0.3);
+        }
+        
+        .cta-button.white:hover {
+            box-shadow: 0 16px 50px rgba(255, 255, 255, 0.4);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-image {
+                width: 250px;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">PawEnrich</div>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="/library">Library</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Happy Golden Retriever" onerror="this.style.display='none'">
+            </div>
+            
+            <h1>Your Dog Deserves Better Than Boredom</h1>
+            <p class="hero-subtitle">Get personalized enrichment activities that match your dog's breed, energy level, and personality - powered by AI</p>
+            
+            <div class="price-tag">Only $9.99 - One Time Payment</div>
+            
+            <a href="/checkout" class="cta-button">Get My Dog's Activities Now</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="cards-section" id="features">
+        <div class="container">
+            <h2 class="section-title">Six Types of Dog Enrichment We Specialize In</h2>
+            
+            <div class="cards-grid">
+                <div class="card mental">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog with puzzle toy" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Mental Enrichment</h3>
+                    <p>Cognitive challenges and problem-solving activities that engage your dog's mind, reduce boredom, and prevent destructive behaviors.</p>
+                </div>
+                
+                <div class="card physical">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog running and exercising" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Physical Enrichment</h3>
+                    <p>Exercise and movement activities designed to meet your dog's physical needs while building strength and coordination.</p>
+                </div>
+                
+                <div class="card social">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Owner bonding with dog" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Social Enrichment</h3>
+                    <p>Interactive activities that strengthen the bond between you and your dog while improving their social skills and confidence.</p>
+                </div>
+                
+                <div class="card environmental">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog exploring environment" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Environmental Enrichment</h3>
+                    <p>Activities that encourage natural exploration and interaction with their surroundings to stimulate curiosity.</p>
+                </div>
+                
+                <div class="card instinctual">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog following natural instincts" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Instinctual Enrichment</h3>
+                    <p>Activities that tap into your dog's natural behaviors like sniffing, digging, foraging, and hunting for mental satisfaction.</p>
+                </div>
+                
+                <div class="card passive">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1534361960057-19889db9621e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog enjoying independent activity" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Passive Enrichment</h3>
+                    <p>Self-directed activities that dogs can enjoy independently while you're busy, like puzzle toys and long-lasting treats.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Tell Us About Your Dog</h3>
+                    <p>Answer 5 quick questions about your dog's breed, age, energy level, and current weather conditions.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>AI Creates Your Plan</h3>
+                    <p>Our advanced AI analyzes your dog's profile and generates 4 personalized enrichment activities with detailed instructions.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Start Enriching</h3>
+                    <p>Follow the step-by-step instructions and watch your dog's excitement. Generate new activities anytime you want.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Trusted by Dog Parents</h2>
+            
+            <div class="stats-grid">
+                <div class="stat">
+                    <span class="stat-number">1000+</span>
+                    <div class="stat-label">Happy Dogs</div>
+                </div>
+                
+                <div class="stat">
+                    <span class="stat-number">4.9★</span>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                
+                <div class="stat">
+                    <span class="stat-number">30s</span>
+                    <div class="stat-label">Generation Time</div>
+                </div>
+                
+                <div class="stat">
+                    <span class="stat-number">∞</span>
+                    <div class="stat-label">Unlimited Use</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <h2>Ready to Transform Your Dog's Day?</h2>
+            <p>Join thousands of dog parents who've already discovered the joy of personalized enrichment</p>
+            
+            <a href="/checkout" class="cta-button white">Get Instant Access - $9.99</a>
+        </div>
+    </section>
+</body>
+</html>

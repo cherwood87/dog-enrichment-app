@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Import Tool - Dog Enrichment</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .instructions-area {
+            height: 120px;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-success {
+            background-color: #27ae60;
+        }
+        .btn-success:hover {
+            background-color: #229954;
+        }
+        .preview {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .preview h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .pdf-list {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .pdf-list h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .pdf-list ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .material-input, .instruction-input {
+            margin-bottom: 10px;
+        }
+        .add-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐕 Add Enrichment Activity</h1>
+        
+        <div class="pdf-list">
+            <h3>Your PDF Files</h3>
+            <p>Copy activities from your PDFs and add them using this form:</p>
+            <ul>
+                <li>Environmental Enrichment.pdf</li>
+                <li>Mental Enrichment Games.pdf</li>
+                <li>Passive Enrichment.pdf</li>
+                <li>Physical Enrichment.pdf</li>
+                <li>Social Enrichment.pdf</li>
+            </ul>
+        </div>
+
+        <form id="activityForm">
+            <div class="form-group">
+                <label for="name">Activity Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category *</label>
+                <select id="category" name="category" required>
+                    <option value="">Select category...</option>
+                    <option value="Mental">Mental Enrichment</option>
+                    <option value="Physical">Physical Enrichment</option>
+                    <option value="Social">Social Enrichment</option>
+                    <option value="Environmental">Environmental Enrichment</option>
+                    <option value="Instinctual">Instinctual Enrichment</option>
+                    <option value="Passive">Passive Enrichment</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" placeholder="Brief description of the activity..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Materials Needed</label>
+                <div id="materialsContainer">
+                    <div class="material-input">
+                        <input type="text" name="materials[]" placeholder="e.g., Kong toy">
+                        <button type="button" class="add-btn" onclick="addMaterial()">Add More</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Instructions</label>
+                <div class="help-text">Add step-by-step instructions</div>
+                <div id="instructionsContainer">
+                    <div class="instruction-input">
+                        <input type="text" name="instructions[]" placeholder="Step 1: ...">
+                        <button type="button" class="add-btn" onclick="addInstruction()">Add Step</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="safety_notes">Safety Notes</label>
+                <textarea id="safety_notes" name="safety_notes" placeholder="Important safety considerations..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="estimated_time">Estimated Time</label>
+                <input type="text" id="estimated_time" name="estimated_time" placeholder="e.g., 15-20 minutes">
+            </div>
+
+            <div class="form-group">
+                <label for="difficulty_level">Difficulty Level</label>
+                <select id="difficulty_level" name="difficulty_level">
+                    <option value="Easy">Easy</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="Hard">Hard</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="energy_required">Energy Required</label>
+                <select id="energy_required" name="energy_required">
+                    <option value="Very Low">Very Low</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                    <option value="Very High">Very High</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="weather_suitable">Weather Suitability</label>
+                <select id="weather_suitable" name="weather_suitable">
+                    <option value="Any" selected>Any Weather</option>
+                    <option value="Nice weather">Nice Weather Only</option>
+                    <option value="Indoor weather">Indoor Only</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Suitable Breed Sizes</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="breed_sizes[]" value="Small"> Small (under 25 lbs)</label>
+                    <label><input type="checkbox" name="breed_sizes[]" value="Medium"> Medium (25-60 lbs)</label>
+                    <label><input type="checkbox" name="breed_sizes[]" value="Large"> Large (60-90 lbs)</label>
+                    <label><input type="checkbox" name="breed_sizes[]" value="Giant"> Giant (over 90 lbs)</label>
+                    <label><input type="checkbox" name="breed_sizes[]" value="All" checked> All Sizes</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Suitable Age Groups</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="age_groups[]" value="Puppy"> Puppy (under 1 year)</label>
+                    <label><input type="checkbox" name="age_groups[]" value="Young adult"> Young Adult (1-3 years)</label>
+                    <label><input type="checkbox" name="age_groups[]" value="Adult"> Adult (3-7 years)</label>
+                    <label><input type="checkbox" name="age_groups[]" value="Senior"> Senior (7+ years)</label>
+                    <label><input type="checkbox" name="age_groups[]" value="All" checked> All Ages</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Tags (optional)</label>
+                <input type="text" id="tags" name="tags" placeholder="e.g., indoor, DIY, food_puzzle (comma-separated)">
+                <div class="help-text">Add keywords to help categorize this activity</div>
+            </div>
+
+            <button type="button" class="btn" onclick="previewActivity()">Preview Activity</button>
+            <button type="submit" class="btn btn-success">Add to Database</button>
+        </form>
+
+        <div id="preview" class="preview" style="display: none;">
+            <h3>Activity Preview</h3>
+            <div id="previewContent"></div>
+        </div>
+    </div>
+
+    <script>
+        function addMaterial() {
+            const container = document.getElementById('materialsContainer');
+            const div = document.createElement('div');
+            div.className = 'material-input';
+            div.innerHTML = `
+                <input type="text" name="materials[]" placeholder="e.g., Tennis ball">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addInstruction() {
+            const container = document.getElementById('instructionsContainer');
+            const stepNumber = container.children.length + 1;
+            const div = document.createElement('div');
+            div.className = 'instruction-input';
+            div.innerHTML = `
+                <input type="text" name="instructions[]" placeholder="Step ${stepNumber}: ...">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function getFormData() {
+            const form = document.getElementById('activityForm');
+            const formData = new FormData(form);
+            
+            const activity = {};
+            
+            // Basic fields
+            activity.name = formData.get('name');
+            activity.category = formData.get('category');
+            activity.description = formData.get('description');
+            activity.safety_notes = formData.get('safety_notes');
+            activity.estimated_time = formData.get('estimated_time');
+            activity.difficulty_level = formData.get('difficulty_level');
+            activity.energy_required = formData.get('energy_required');
+            activity.weather_suitable = formData.get('weather_suitable');
+            
+            // Arrays
+            activity.materials = formData.getAll('materials[]').filter(m => m.trim());
+            activity.instructions = formData.getAll('instructions[]').filter(i => i.trim());
+            activity.breed_sizes = formData.getAll('breed_sizes[]');
+            activity.age_groups = formData.getAll('age_groups[]');
+            
+            // Tags
+            const tagsStr = formData.get('tags');
+            activity.tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+            
+            return activity;
+        }
+
+        function previewActivity() {
+            const activity = getFormData();
+            
+            let html = `
+                <p><strong>Name:</strong> ${activity.name}</p>
+                <p><strong>Category:</strong> ${activity.category}</p>
+                <p><strong>Description:</strong> ${activity.description}</p>
+                <p><strong>Materials:</strong> ${activity.materials.join(', ')}</p>
+                <p><strong>Instructions:</strong></p>
+                <ol>
+                    ${activity.instructions.map(inst => `<li>${inst}</li>`).join('')}
+                </ol>
+                <p><strong>Safety Notes:</strong> ${activity.safety_notes}</p>
+                <p><strong>Estimated Time:</strong> ${activity.estimated_time}</p>
+                <p><strong>Difficulty:</strong> ${activity.difficulty_level}</p>
+                <p><strong>Energy Required:</strong> ${activity.energy_required}</p>
+                <p><strong>Weather:</strong> ${activity.weather_suitable}</p>
+                <p><strong>Breed Sizes:</strong> ${activity.breed_sizes.join(', ')}</p>
+                <p><strong>Age Groups:</strong> ${activity.age_groups.join(', ')}</p>
+                ${activity.tags.length ? `<p><strong>Tags:</strong> ${activity.tags.join(', ')}</p>` : ''}
+            `;
+            
+            document.getElementById('previewContent').innerHTML = html;
+            document.getElementById('preview').style.display = 'block';
+        }
+
+        document.getElementById('activityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const activity = getFormData();
+            
+            // Here you would normally send to your backend
+            // For now, we'll show in console and alert
+            console.log('Activity data:', activity);
+            
+            // Copy the activity data to clipboard as JSON for easy import
+            const jsonData = JSON.stringify(activity, null, 2);
+            navigator.clipboard.writeText(jsonData).then(() => {
+                alert('Activity data copied to clipboard! You can paste this into your database import script.');
+            }).catch(() => {
+                alert('Activity created! Check console for data to copy.');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Library - PawEnrich</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        /* Back link */
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 30px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #2c3e50;
+        }
+        
+        /* Search and Filter Bar */
+        .search-filter-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .filter-tags {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tag {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 20px;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+        
+        .filter-tag:hover, .filter-tag.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* Section Headers */
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .section-count {
+            color: #666;
+            font-size: 1em;
+        }
+        
+        /* Activity Grid */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        
+        <!-- Activity Cards -->
+        .activity-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+        
+        .modal-category {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        
+        .modal-title {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .modal-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .modal-section {
+            margin-bottom: 30px;
+        }
+        
+        .modal-section h3 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-section .icon {
+            font-size: 1.2em;
+        }
+        
+        .modal-description {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+        
+        .materials-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .materials-list li {
+            background: #f8f9fa;
+            margin: 8px 0;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .instructions-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+        
+        .instructions-list li {
+            counter-increment: step-counter;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            position: relative;
+            padding-left: 60px;
+        }
+        
+        .instructions-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .safety-notes {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 12px;
+            padding: 20px;
+            color: #856404;
+        }
+        
+        .safety-notes::before {
+            content: "⚠️";
+            margin-right: 8px;
+        }
+        
+        .breakdown-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        
+        .breakdown-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .breakdown-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+        
+        /* Floating Chat Button */
+        .floating-chat-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-chat-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+        
+        .chat-icon {
+            font-size: 1.2em;
+        }
+        
+        .help-text {
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        /* Chat Modal Styles */
+        .chat-modal .modal-content {
+            width: 90%;
+            max-width: 500px;
+            height: 70vh;
+            max-height: 600px;
+        }
+        
+        .chat-modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            height: 70vh;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-close {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .ai-message, .user-message {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 15px;
+            line-height: 1.5;
+        }
+        
+        .ai-message {
+            background: #f1f3f4;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .user-message {
+            background: #667eea;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .message-content li {
+            margin: 5px 0;
+        }
+        
+        .activity-suggestion {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-suggestion:hover {
+            background: #bbdefb;
+        }
+        
+        .activity-suggestion h4 {
+            color: #1976d2;
+            margin: 0 0 5px 0;
+        }
+        
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid #e1e8ed;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px 0;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.5s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        #chatInput {
+            flex: 1;
+            min-height: 40px;
+            max-height: 100px;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        
+        #chatInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        #sendChatBtn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        #sendChatBtn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        #sendChatBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .difficulty-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        .difficulty-easy {
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+        }
+        
+        .difficulty-medium {
+            background: rgba(255, 193, 7, 0.9);
+            color: white;
+        }
+        
+        .difficulty-hard {
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .card-category {
+            color: #667eea;
+            font-size: 0.9em;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .card-description {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-time {
+            color: #888;
+            font-size: 0.8em;
+        }
+        
+        .card-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .star {
+            color: #ffc107;
+            font-size: 0.9em;
+        }
+        
+        .rating-text {
+            color: #888;
+            font-size: 0.8em;
+            margin-left: 4px;
+        }
+        
+        /* Category-specific colors */
+        .card-mental .card-image {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(102, 126, 234, 0.1) 100%);
+        }
+        
+        .card-physical .card-image {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.3) 0%, rgba(40, 167, 69, 0.1) 100%);
+        }
+        
+        .card-social .card-image {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.3) 0%, rgba(255, 193, 7, 0.1) 100%);
+        }
+        
+        .card-environmental .card-image {
+            background: linear-gradient(135deg, rgba(13, 202, 240, 0.3) 0%, rgba(13, 202, 240, 0.1) 100%);
+        }
+        
+        .card-instinctual .card-image {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.3) 0%, rgba(220, 53, 69, 0.1) 100%);
+        }
+        
+        .card-passive .card-image {
+            background: linear-gradient(135deg, rgba(111, 66, 193, 0.3) 0%, rgba(111, 66, 193, 0.1) 100%);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .search-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: auto;
+            }
+            
+            .activity-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/app" class="back-link">← Back to Generator</a>
+        
+        <div class="header">
+            <h1>Activity Library</h1>
+            <p>Discover hundreds of expert-curated enrichment activities for your dog</p>
+        </div>
+        
+        <!-- Search and Filter Bar -->
+        <div class="search-filter-bar">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search activities..." id="searchInput">
+            </div>
+            <div class="filter-tags">
+                <button class="filter-tag active" data-category="all">All</button>
+                <button class="filter-tag" data-category="mental">Mental</button>
+                <button class="filter-tag" data-category="physical">Physical</button>
+                <button class="filter-tag" data-category="social">Social</button>
+                <button class="filter-tag" data-category="environmental">Environmental</button>
+                <button class="filter-tag" data-category="instinctual">Instinctual</button>
+                <button class="filter-tag" data-category="passive">Passive</button>
+            </div>
+        </div>
+        
+        <!-- Featured This Week -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Featured This Week</h2>
+                <span class="section-count">{{ featured_activities|length }} activities</span>
+            </div>
+            <div class="activity-grid">
+                {% for activity in featured_activities %}
+                <div class="activity-card card-{{ activity.category.lower() }}" data-category="{{ activity.category.lower() }}">
+                    <div class="card-image">
+                        {% if activity.category == 'Mental' %}
+                        <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog with puzzle toy">
+                        {% elif activity.category == 'Physical' %}
+                        <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog running">
+                        {% elif activity.category == 'Social' %}
+                        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Owner training dog">
+                        {% elif activity.category == 'Environmental' %}
+                        <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog exploring">
+                        {% elif activity.category == 'Instinctual' %}
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog sniffing">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1534361960057-19889db9621e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog with toy">
+                        {% endif %}
+                        <div class="difficulty-badge difficulty-{{ activity.difficulty_level.lower() }}">{{ activity.difficulty_level }}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-category">{{ activity.category }} Enrichment</div>
+                        <h3 class="card-title">{{ activity.name }}</h3>
+                        <p class="card-description">{{ activity.description }}</p>
+                        <div class="card-meta">
+                            <span class="card-time">{{ activity.estimated_time }}</span>
+                            <div class="card-rating">
+                                <span class="star">★★★★★</span>
+                                <span class="rating-text">4.8 ({{ range(50, 200) | random }})</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Dynamic Category Sections -->
+        {% for category, activities in activities_by_category.items() %}
+        {% if activities %}
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">{{ category }} Enrichment</h2>
+                <span class="section-count">{{ activities|length }} activities</span>
+            </div>
+            <div class="activity-grid">
+                {% for activity in activities[:6] %}
+                <div class="activity-card card-{{ activity.category.lower() }}" data-category="{{ activity.category.lower() }}">
+                    <div class="card-image">
+                        {% if activity.category == 'Mental' %}
+                        <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog with puzzle toy">
+                        {% elif activity.category == 'Physical' %}
+                        <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog running">
+                        {% elif activity.category == 'Social' %}
+                        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Owner training dog">
+                        {% elif activity.category == 'Environmental' %}
+                        <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog exploring">
+                        {% elif activity.category == 'Instinctual' %}
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog sniffing">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1534361960057-19889db9621e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog with toy">
+                        {% endif %}
+                        <div class="difficulty-badge difficulty-{{ activity.difficulty_level.lower() }}">{{ activity.difficulty_level }}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-category">{{ activity.category }} Enrichment</div>
+                        <h3 class="card-title">{{ activity.name }}</h3>
+                        <p class="card-description">{{ activity.description }}</p>
+                        <div class="card-meta">
+                            <span class="card-time">{{ activity.estimated_time }}</span>
+                            <div class="card-rating">
+                                <span class="star">★★★★★</span>
+                                <span class="rating-text">4.{{ range(5, 9) | random }} ({{ range(50, 250) | random }})</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        
+        <!-- Activity Detail Modal -->
+        <div id="activityModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <div class="modal-category" id="modalCategory"></div>
+                    <h2 class="modal-title" id="modalTitle"></h2>
+                    <div class="modal-meta">
+                        <div class="meta-item" id="modalTime"></div>
+                        <div class="meta-item" id="modalDifficulty"></div>
+                        <div class="meta-item" id="modalEnergy"></div>
+                    </div>
+                    <button class="breakdown-btn" id="breakdownBtn" onclick="getActivityBreakdown()">📚 Get Step-by-Step Guide</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-section">
+                        <div class="modal-description" id="modalDescription"></div>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <h3><span class="icon">🧰</span> Materials Needed</h3>
+                        <ul class="materials-list" id="modalMaterials"></ul>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <h3><span class="icon">📋</span> Step-by-Step Instructions</h3>
+                        <ol class="instructions-list" id="modalInstructions"></ol>
+                    </div>
+                    
+                    <div class="modal-section" id="safetySection">
+                        <h3><span class="icon">⚠️</span> Safety Notes</h3>
+                        <div class="safety-notes" id="modalSafety"></div>
+                    </div>
+                    
+                    <div class="modal-section" id="breakdownSection" style="display: none;">
+                        <h3><span class="icon">🎯</span> Detailed Breakdown</h3>
+                        <div class="breakdown-content" id="breakdownContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Modal -->
+        <div id="chatModal" class="modal chat-modal">
+            <div class="chat-modal-content">
+                <div class="chat-header">
+                    <h3>🐕 Enrichment Helper</h3>
+                    <span class="chat-close">&times;</span>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="ai-message">
+                        <div class="message-content">
+                            <p>Hi! I'm your enrichment expert assistant. I can help you with:</p>
+                            <ul>
+                                <li>Personalized activity recommendations</li>
+                                <li>Step-by-step activity breakdowns</li>
+                                <li>Problem-solving for specific challenges</li>
+                                <li>Age and safety-appropriate suggestions</li>
+                            </ul>
+                            <p>What can I help you with today?</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea id="chatInput" placeholder="Ask me about enrichment activities, specific challenges, or get step-by-step breakdowns..."></textarea>
+                        <button id="sendChatBtn" onclick="sendChatMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Chat Button -->
+        <div class="floating-chat-btn" id="floatingChatBtn" onclick="openChatModal()">
+            <span class="chat-icon">💬</span>
+            <span class="help-text">Need Help?</span>
+        </div>
+    </div>
+    
+    <script>
+        // Get all activities data for the modal
+        const activitiesData = {
+            {% for category, activities in activities_by_category.items() %}
+            {% for activity in activities %}
+            "{{ activity.name|replace('"', '\"') }}": {
+                name: "{{ activity.name|replace('"', '\"') }}",
+                category: "{{ activity.category }}",
+                description: "{{ activity.description|replace('"', '\"') }}",
+                materials: {{ activity.materials|tojson }},
+                instructions: {{ activity.instructions|tojson }},
+                safety_notes: "{{ activity.safety_notes|replace('"', '\"') }}",
+                estimated_time: "{{ activity.estimated_time }}",
+                difficulty_level: "{{ activity.difficulty_level }}",
+                energy_required: "{{ activity.energy_required }}"
+            },
+            {% endfor %}
+            {% endfor %}
+            {% for activity in featured_activities %}
+            "{{ activity.name|replace('"', '\"') }}": {
+                name: "{{ activity.name|replace('"', '\"') }}",
+                category: "{{ activity.category }}",
+                description: "{{ activity.description|replace('"', '\"') }}",
+                materials: {{ activity.materials|tojson }},
+                instructions: {{ activity.instructions|tojson }},
+                safety_notes: "{{ activity.safety_notes|replace('"', '\"') }}",
+                estimated_time: "{{ activity.estimated_time }}",
+                difficulty_level: "{{ activity.difficulty_level }}",
+                energy_required: "{{ activity.energy_required }}"
+            },
+            {% endfor %}
+        };
+        
+        // Modal elements
+        const modal = document.getElementById('activityModal');
+        const closeBtn = document.querySelector('.close');
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const filterTags = document.querySelectorAll('.filter-tag');
+        const activityCards = document.querySelectorAll('.activity-card');
+        
+        // Filter by category
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                // Update active tag
+                filterTags.forEach(t => t.classList.remove('active'));
+                tag.classList.add('active');
+                
+                const category = tag.dataset.category;
+                
+                // Filter cards
+                activityCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            activityCards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const description = card.querySelector('.card-description').textContent.toLowerCase();
+                const category = card.querySelector('.card-category').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || category.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Activity card click handler - Show modal with details
+        activityCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const title = card.querySelector('.card-title').textContent;
+                const activity = activitiesData[title];
+                
+                if (activity) {
+                    showActivityModal(activity);
+                }
+            });
+        });
+        
+        // Show activity modal
+        function showActivityModal(activity) {
+            currentActivityName = activity.name;  // Store for breakdown function
+            
+            document.getElementById('modalCategory').textContent = activity.category + ' Enrichment';
+            document.getElementById('modalTitle').textContent = activity.name;
+            document.getElementById('modalDescription').textContent = activity.description;
+            document.getElementById('modalTime').textContent = activity.estimated_time || 'Time varies';
+            document.getElementById('modalDifficulty').textContent = activity.difficulty_level || 'Medium';
+            document.getElementById('modalEnergy').textContent = activity.energy_required || 'Medium Energy';
+            
+            // Reset breakdown section
+            document.getElementById('breakdownSection').style.display = 'none';
+            document.getElementById('breakdownBtn').textContent = '📚 Get Step-by-Step Guide';
+            document.getElementById('breakdownBtn').disabled = false;
+            
+            // Materials
+            const materialsList = document.getElementById('modalMaterials');
+            materialsList.innerHTML = '';
+            if (activity.materials && activity.materials.length > 0) {
+                activity.materials.forEach(material => {
+                    const li = document.createElement('li');
+                    li.textContent = material;
+                    materialsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'Basic supplies';
+                materialsList.appendChild(li);
+            }
+            
+            // Instructions
+            const instructionsList = document.getElementById('modalInstructions');
+            instructionsList.innerHTML = '';
+            if (activity.instructions && activity.instructions.length > 0) {
+                activity.instructions.forEach(instruction => {
+                    const li = document.createElement('li');
+                    li.textContent = instruction;
+                    instructionsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'Follow activity guidelines';
+                instructionsList.appendChild(li);
+            }
+            
+            // Safety notes
+            const safetySection = document.getElementById('safetySection');
+            const safetyNotes = document.getElementById('modalSafety');
+            if (activity.safety_notes && activity.safety_notes.trim()) {
+                safetyNotes.textContent = activity.safety_notes;
+                safetySection.style.display = 'block';
+            } else {
+                safetySection.style.display = 'none';
+            }
+            
+            // Show modal
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+        }
+        
+        // Close modal
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Chat functionality
+        let conversationHistory = [];
+        let currentActivityName = null;
+        
+        // Open chat modal
+        function openChatModal() {
+            document.getElementById('chatModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Close chat modal
+        function closeChatModal() {
+            document.getElementById('chatModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Send chat message
+        async function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            chatInput.value = '';
+            
+            // Show typing indicator
+            document.getElementById('typingIndicator').style.display = 'flex';
+            document.getElementById('sendChatBtn').disabled = true;
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        history: conversationHistory
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Add AI response to chat
+                    addMessageToChat(data.response, 'ai');
+                    
+                    // Add activity suggestions if provided
+                    if (data.relevant_activities && data.relevant_activities.length > 0) {
+                        addActivitySuggestions(data.relevant_activities);
+                    }
+                    
+                    // Update conversation history
+                    conversationHistory.push(
+                        { role: 'user', content: message },
+                        { role: 'assistant', content: data.response }
+                    );
+                    
+                    // Keep only last 10 messages
+                    if (conversationHistory.length > 10) {
+                        conversationHistory = conversationHistory.slice(-10);
+                    }
+                } else {
+                    addMessageToChat('Sorry, I encountered an error. Please try again.', 'ai');
+                }
+            } catch (error) {
+                addMessageToChat('Sorry, I\'m having trouble connecting. Please try again.', 'ai');
+            } finally {
+                // Hide typing indicator
+                document.getElementById('typingIndicator').style.display = 'none';
+                document.getElementById('sendChatBtn').disabled = false;
+            }
+        }
+        
+        // Add message to chat
+        function addMessageToChat(message, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = sender === 'user' ? 'user-message' : 'ai-message';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = message.replace(/\n/g, '<br>');
+            
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Add activity suggestions
+        function addActivitySuggestions(activities) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            activities.forEach(activity => {
+                const suggestionDiv = document.createElement('div');
+                suggestionDiv.className = 'activity-suggestion';
+                suggestionDiv.onclick = () => showActivityFromChat(activity.name);
+                
+                suggestionDiv.innerHTML = `
+                    <h4>${activity.name}</h4>
+                    <p>${activity.description}</p>
+                    <small>${activity.category} • ${activity.estimated_time}</small>
+                `;
+                
+                chatMessages.appendChild(suggestionDiv);
+            });
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Show activity from chat suggestion
+        function showActivityFromChat(activityName) {
+            const activity = activitiesData[activityName];
+            if (activity) {
+                closeChatModal();
+                showActivityModal(activity);
+            }
+        }
+        
+        // Get activity breakdown
+        async function getActivityBreakdown() {
+            if (!currentActivityName) return;
+            
+            const breakdownBtn = document.getElementById('breakdownBtn');
+            const breakdownSection = document.getElementById('breakdownSection');
+            const breakdownContent = document.getElementById('breakdownContent');
+            
+            breakdownBtn.textContent = 'Loading...';
+            breakdownBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/activity-breakdown', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        activity_name: currentActivityName
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    breakdownContent.textContent = data.breakdown;
+                    breakdownSection.style.display = 'block';
+                    breakdownBtn.textContent = '✅ Breakdown Loaded';
+                } else {
+                    breakdownContent.textContent = 'Sorry, I couldn\'t generate a breakdown for this activity.';
+                    breakdownSection.style.display = 'block';
+                    breakdownBtn.textContent = '❌ Error';
+                }
+            } catch (error) {
+                breakdownContent.textContent = 'Error loading breakdown. Please try again.';
+                breakdownSection.style.display = 'block';
+                breakdownBtn.textContent = '❌ Error';
+            }
+        }
+        
+        // Chat modal event listeners
+        document.querySelector('.chat-close').addEventListener('click', closeChatModal);
+        
+        // Enter key support for chat input
+        document.getElementById('chatInput').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        });
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                if (modal.style.display === 'block') {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+                if (document.getElementById('chatModal').style.display === 'block') {
+                    closeChatModal();
+                }
+            }
+        });
+        
+        // Close chat modal when clicking outside
+        window.addEventListener('click', (event) => {
+            const chatModal = document.getElementById('chatModal');
+            if (event.target === chatModal) {
+                closeChatModal();
+            }
+        });
+    </script>
+</body>
+</html>
