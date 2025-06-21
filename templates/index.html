@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Your Dog's Enrichment Plan - PawEnrich</title>
+    <title>Create Your Dog's Enrichment Plan - Beyond Busy</title>
     <style>
         * {
             margin: 0;
@@ -223,8 +223,8 @@
                     <label for="energy_level">What's your dog's energy level?</label>
                     <select name="energy_level" id="energy_level" required>
                         <option value="">Select energy level...</option>
-                        <option value="Low energy - prefers calm activities" {{ 'selected' if (saved_profile|default({})).get('energy_level') == 'Low energy - prefers calm activities' else '' }}>Low energy - prefers calm activities</option>
-                        <option value="Moderate energy - enjoys regular exercise" {{ 'selected' if (saved_profile|default({})).get('energy_level') == 'Moderate energy - enjoys regular exercise' else '' }}>Moderate energy - enjoys regular exercise</option>
+                        <option value="Low energy - prefers calm activities" {{ 'selected' if (saved_profile|default({})).get('energy_level') == 'Low energy - calm activities' else '' }}>Low energy - calm activities</option>
+                        <option value="Moderate energy - enjoys regular exercise" {{ 'selected' if (saved_profile|default({})).get('energy_level') == 'Moderate energy - regular exercise' else '' }}>Moderate energy - regular exercise</option>
                         <option value="High energy - needs lots of stimulation" {{ 'selected' if (saved_profile|default({})).get('energy_level') == 'High energy - needs lots of stimulation' else '' }}>High energy - needs lots of stimulation</option>
                     </select>
                 </div>
