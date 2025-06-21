@@ -11,7 +11,7 @@ class DogOnlyImageManager:
         # VERIFIED DOG-ONLY IMAGES - Each URL manually checked
         self.verified_dog_images = [
             # HERO IMAGE - Your custom digging dog (Instinctual Enrichment)
-            '/static/images/hero-dog-digging.jpg',  # Your custom digging dog image
+            '/static/images/Morning Diggin.jpg',  # Your custom digging dog image
             
             # Border Collies & Smart Dogs (Mental Enrichment)
             'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',  # Border Collie with puzzle
@@ -70,7 +70,7 @@ class DogOnlyImageManager:
         
         # Special case: Always use your custom digging dog for hero
         if context == 'hero':
-            hero_image = '/static/images/hero-dog-digging.jpg'
+            hero_image = '/static/images/Morning Diggin.jpg'
             self.page_assignments[context] = hero_image
             self.used_images.add(hero_image)
             return hero_image
