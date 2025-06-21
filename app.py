@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify, session
-from openai import OpenAI
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -16,7 +15,9 @@ db = EnrichmentDatabase()
 # You'll need to add your API keys here (kept for fallback)
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 if OPENAI_API_KEY:
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    import openai
+    openai.api_key = OPENAI_API_KEY
+    client = openai
 else:
     client = None
 
@@ -166,7 +167,7 @@ def generate_passive_enrichment_activities_ai(dog_profile):
         if not client:
             raise Exception("OpenAI client not available")
         
-        response = client.chat.completions.create(
+        response = client.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a professional dog trainer specializing in passive enrichment and independent dog activities. Focus on safe, unsupervised activities."},
@@ -177,7 +178,7 @@ def generate_passive_enrichment_activities_ai(dog_profile):
         )
         
         import json
-        activities_json = response.choices[0].message.content
+        activities_json = response['choices'][0]['message']['content']
         activities_data = json.loads(activities_json)
         
         return activities_data['activities']
@@ -290,7 +291,7 @@ def generate_enrichment_activities_ai(dog_profile):
         if not client:
             raise Exception("OpenAI client not available")
         
-        response = client.chat.completions.create(
+        response = client.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a professional dog trainer and enrichment specialist. Provide safe, creative activities."},
@@ -301,7 +302,7 @@ def generate_enrichment_activities_ai(dog_profile):
         )
         
         import json
-        activities_json = response.choices[0].message.content
+        activities_json = response['choices'][0]['message']['content']
         activities_data = json.loads(activities_json)
         
         return activities_data['activities']
@@ -358,7 +359,7 @@ def generate_enrichment_activities(dog_profile):
         if not client:
             raise Exception("OpenAI client not available")
         
-        response = client.chat.completions.create(
+        response = client.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a professional dog trainer and enrichment specialist. Provide safe, creative activities."},
@@ -369,8 +370,7 @@ def generate_enrichment_activities(dog_profile):
         )
         
         import json
-        activities_json = response.choices[0].message.content
-        activities_data = json.loads(activities_json)
+        activities_data = json.loads(response['choices'][0]['message']['content'])
         
         return activities_data['activities']
     
