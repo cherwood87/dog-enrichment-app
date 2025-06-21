@@ -91,9 +91,20 @@ def activity_library():
         if activities_by_category[category] and len(featured) < 4:
             featured.append(activities_by_category[category][0])
     
+    # Get diverse images for library page
+    library_images = {
+        'mental': get_multiple_dog_images(3, 'border_collies'),
+        'physical': get_multiple_dog_images(3, 'golden_retrievers'), 
+        'social': get_multiple_dog_images(3, 'mixed_breeds'),
+        'environmental': get_multiple_dog_images(3, 'working_dogs'),
+        'instinctual': get_multiple_dog_images(3, 'german_shepherds'),
+        'passive': get_multiple_dog_images(3, 'small_dogs')
+    }
+    
     return render_template('library.html', 
                          activities_by_category=activities_by_category,
-                         featured_activities=featured)
+                         featured_activities=featured,
+                         images=library_images)
 
 @app.route('/app')
 def app_form():
