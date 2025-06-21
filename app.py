@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from enrichment_database import EnrichmentDatabase
 from chat_assistant import add_chat_routes
-from dog_images import get_dog_image, get_multiple_dog_images
+from verified_dog_images import get_unique_dog_image, get_multiple_unique_dog_images
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your-secret-key-here-change-in-production')  # Change this in production
@@ -27,15 +27,15 @@ add_chat_routes(app, OPENAI_API_KEY)
 
 @app.route('/')
 def landing():
-    # Get unique images for each section
+    # Get UNIQUE images for each section - NO REPEATS
     page_images = {
-        'hero': get_dog_image('hero'),
-        'mental': get_dog_image('mental_enrichment'),
-        'physical': get_dog_image('physical_enrichment'),
-        'social': get_dog_image('social_enrichment'),
-        'environmental': get_dog_image('environmental_enrichment'),
-        'instinctual': get_dog_image('instinctual_enrichment'),
-        'passive': get_dog_image('passive_enrichment')
+        'hero': get_unique_dog_image('hero'),
+        'mental': get_unique_dog_image('mental_landing'),
+        'physical': get_unique_dog_image('physical_landing'),
+        'social': get_unique_dog_image('social_landing'),
+        'environmental': get_unique_dog_image('environmental_landing'),
+        'instinctual': get_unique_dog_image('instinctual_landing'),
+        'passive': get_unique_dog_image('passive_landing')
     }
     return render_template('landing.html', images=page_images)
 
@@ -91,14 +91,14 @@ def activity_library():
         if activities_by_category[category] and len(featured) < 4:
             featured.append(activities_by_category[category][0])
     
-    # Get diverse images for library page
+    # Get UNIQUE, DIVERSE images for library page - NO REPEATS
     library_images = {
-        'mental': get_multiple_dog_images(3, 'border_collies'),
-        'physical': get_multiple_dog_images(3, 'golden_retrievers'), 
-        'social': get_multiple_dog_images(3, 'mixed_breeds'),
-        'environmental': get_multiple_dog_images(3, 'working_dogs'),
-        'instinctual': get_multiple_dog_images(3, 'german_shepherds'),
-        'passive': get_multiple_dog_images(3, 'small_dogs')
+        'mental': get_multiple_unique_dog_images(6, 'library_mental'),
+        'physical': get_multiple_unique_dog_images(6, 'library_physical'), 
+        'social': get_multiple_unique_dog_images(6, 'library_social'),
+        'environmental': get_multiple_unique_dog_images(6, 'library_environmental'),
+        'instinctual': get_multiple_unique_dog_images(6, 'library_instinctual'),
+        'passive': get_multiple_unique_dog_images(6, 'library_passive')
     }
     
     return render_template('library.html', 
@@ -270,8 +270,8 @@ def generate_activities():
         # Create profile summary for display
         profile_summary = f"Dog breed: {breed}, Age: {age}, Energy level: {energy_level}, Weather: {weather}, Preferred enrichment: {enrichment_type}"
         
-        # Get breed-appropriate image
-        breed_image = get_dog_image('results', breed)
+        # Get breed-appropriate UNIQUE image
+        breed_image = get_unique_dog_image(f'results_{breed}')
         
         return render_template('results.html', 
                              activities=activities, 
