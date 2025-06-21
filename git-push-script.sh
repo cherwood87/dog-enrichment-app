@@ -17,22 +17,28 @@ git add .
 echo ""
 echo "💬 Committing changes..."
 # Commit with a descriptive message
-git commit -m "✨ Major design system update: Implement consistent glassmorphism UI
+git commit -m "✨ Major design system update + Landing page text fixes
 
-🎨 Design Updates:
+🎨 Design System Updates:
 - Applied purple gradient background across all pages
 - Added floating geometric shapes animation
 - Implemented glassmorphism cards with backdrop blur
 - Unified color scheme (#2D1B69 for text)
 - Consistent button styles and hover effects
 
+🐛 Landing Page Fixes:
+- Fixed text cutoff and overlap issues in enrichment cards
+- Improved card layout structure and spacing
+- Optimized text sizes and positioning
+- Better mobile-responsive card design
+
 📱 Mobile Improvements:
 - Mobile-first approach with 430px container width
 - Responsive breakpoints at 480px
-- Touch-friendly button sizes
+- Touch-friendly button sizes and spacing
 
 🔧 Pages Updated:
-- Landing page: Enhanced hero section and glassmorphism cards
+- Landing page: Enhanced hero + fixed card text layout
 - Library page: Consistent styling with improved search/filter UI
 - Form page (index.html): Complete redesign to match design system
 - Results page: Unified styling
@@ -42,6 +48,7 @@ git commit -m "✨ Major design system update: Implement consistent glassmorphis
 - Smooth animations and transitions
 - Professional glassmorphism aesthetic
 - Consistent visual hierarchy
+- Fixed text readability issues
 - Improved accessibility and usability"
 
 echo ""
