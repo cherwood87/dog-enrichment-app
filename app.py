@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 from enrichment_database import EnrichmentDatabase
 from chat_assistant import add_chat_routes
+from dog_images import get_dog_image, get_multiple_dog_images
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your-secret-key-here-change-in-production')  # Change this in production
@@ -26,7 +27,17 @@ add_chat_routes(app, OPENAI_API_KEY)
 
 @app.route('/')
 def landing():
-    return render_template('landing.html')
+    # Get unique images for each section
+    page_images = {
+        'hero': get_dog_image('hero'),
+        'mental': get_dog_image('mental_enrichment'),
+        'physical': get_dog_image('physical_enrichment'),
+        'social': get_dog_image('social_enrichment'),
+        'environmental': get_dog_image('environmental_enrichment'),
+        'instinctual': get_dog_image('instinctual_enrichment'),
+        'passive': get_dog_image('passive_enrichment')
+    }
+    return render_template('landing.html', images=page_images)
 
 @app.route('/library')
 def activity_library():
@@ -248,9 +259,13 @@ def generate_activities():
         # Create profile summary for display
         profile_summary = f"Dog breed: {breed}, Age: {age}, Energy level: {energy_level}, Weather: {weather}, Preferred enrichment: {enrichment_type}"
         
+        # Get breed-appropriate image
+        breed_image = get_dog_image('results', breed)
+        
         return render_template('results.html', 
                              activities=activities, 
-                             dog_profile=profile_summary)
+                             dog_profile=profile_summary,
+                             breed_image=breed_image)
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
