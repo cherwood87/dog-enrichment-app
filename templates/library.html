@@ -748,17 +748,41 @@
                 <div class="activity-card card-{{ activity.category.lower() }}" data-category="{{ activity.category.lower() }}">
                     <div class="card-image">
                         {% if activity.category == 'Mental' %}
-                        <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog with puzzle toy">
-                        {% elif activity.category == 'Physical' %}
-                        <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog running">
-                        {% elif activity.category == 'Social' %}
-                        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Owner training dog">
-                        {% elif activity.category == 'Environmental' %}
-                        <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog exploring">
-                        {% elif activity.category == 'Instinctual' %}
-                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog sniffing">
+                        {% if loop.index0 < images.mental|length %}
+                        <img src="{{ images.mental[loop.index0] }}" alt="Mental enrichment activity">
                         {% else %}
-                        <img src="https://images.unsplash.com/photo-1534361960057-19889db9621e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog with toy">
+                        <img src="{{ images.mental[0] }}" alt="Mental enrichment activity">
+                        {% endif %}
+                        {% elif activity.category == 'Physical' %}
+                        {% if loop.index0 < images.physical|length %}
+                        <img src="{{ images.physical[loop.index0] }}" alt="Physical enrichment activity">
+                        {% else %}
+                        <img src="{{ images.physical[0] }}" alt="Physical enrichment activity">
+                        {% endif %}
+                        {% elif activity.category == 'Social' %}
+                        {% if loop.index0 < images.social|length %}
+                        <img src="{{ images.social[loop.index0] }}" alt="Social enrichment activity">
+                        {% else %}
+                        <img src="{{ images.social[0] }}" alt="Social enrichment activity">
+                        {% endif %}
+                        {% elif activity.category == 'Environmental' %}
+                        {% if loop.index0 < images.environmental|length %}
+                        <img src="{{ images.environmental[loop.index0] }}" alt="Environmental enrichment activity">
+                        {% else %}
+                        <img src="{{ images.environmental[0] }}" alt="Environmental enrichment activity">
+                        {% endif %}
+                        {% elif activity.category == 'Instinctual' %}
+                        {% if loop.index0 < images.instinctual|length %}
+                        <img src="{{ images.instinctual[loop.index0] }}" alt="Instinctual enrichment activity">
+                        {% else %}
+                        <img src="{{ images.instinctual[0] }}" alt="Instinctual enrichment activity">
+                        {% endif %}
+                        {% else %}
+                        {% if loop.index0 < images.passive|length %}
+                        <img src="{{ images.passive[loop.index0] }}" alt="Passive enrichment activity">
+                        {% else %}
+                        <img src="{{ images.passive[0] }}" alt="Passive enrichment activity">
+                        {% endif %}
                         {% endif %}
                         <div class="difficulty-badge difficulty-{{ activity.difficulty_level.lower() }}">{{ activity.difficulty_level }}</div>
                     </div>
@@ -791,18 +815,24 @@
                 {% for activity in activities[:6] %}
                 <div class="activity-card card-{{ activity.category.lower() }}" data-category="{{ activity.category.lower() }}">
                     <div class="card-image">
-                        {% if activity.category == 'Mental' %}
-                        <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog with puzzle toy">
-                        {% elif activity.category == 'Physical' %}
-                        <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog running">
-                        {% elif activity.category == 'Social' %}
-                        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Owner training dog">
-                        {% elif activity.category == 'Environmental' %}
-                        <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog exploring">
-                        {% elif activity.category == 'Instinctual' %}
-                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog sniffing">
+                        {% if category == 'Mental' %}
+                        {% set category_images = images.mental %}
+                        {% elif category == 'Physical' %}
+                        {% set category_images = images.physical %}
+                        {% elif category == 'Social' %}
+                        {% set category_images = images.social %}
+                        {% elif category == 'Environmental' %}
+                        {% set category_images = images.environmental %}
+                        {% elif category == 'Instinctual' %}
+                        {% set category_images = images.instinctual %}
                         {% else %}
-                        <img src="https://images.unsplash.com/photo-1534361960057-19889db9621e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dog with toy">
+                        {% set category_images = images.passive %}
+                        {% endif %}
+                        
+                        {% if loop.index0 < category_images|length %}
+                        <img src="{{ category_images[loop.index0] }}" alt="{{ category }} enrichment activity">
+                        {% else %}
+                        <img src="{{ category_images[0] }}" alt="{{ category }} enrichment activity">
                         {% endif %}
                         <div class="difficulty-badge difficulty-{{ activity.difficulty_level.lower() }}">{{ activity.difficulty_level }}</div>
                     </div>
