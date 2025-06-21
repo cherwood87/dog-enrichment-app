@@ -10,7 +10,7 @@ import os
 import json
 import time
 import random
-from openai import OpenAI
+import openai
 from enrichment_database import EnrichmentDatabase
 import re
 from typing import List, Dict, Any
@@ -21,7 +21,8 @@ class EnhancedActivityLibrary:
         api_key = openai_api_key or os.environ.get('OPENAI_API_KEY')
         if api_key:
             try:
-                self.client = OpenAI(api_key=api_key)
+                openai.api_key = api_key
+                self.client = openai
             except Exception as e:
                 print(f"Warning: Could not initialize OpenAI client: {e}")
                 self.client = None

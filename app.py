@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import os
 from datetime import datetime
 from enrichment_database import EnrichmentDatabase
-from chat_assistant import add_chat_routes
+# Note: chat_assistant import removed temporarily due to OpenAI version conflicts
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your-secret-key-here-change-in-production')  # Change this in production
@@ -21,8 +21,8 @@ if OPENAI_API_KEY:
 else:
     client = None
 
-# Add chat routes to the app
-add_chat_routes(app, OPENAI_API_KEY)
+# Add chat routes to the app (temporarily disabled)
+# add_chat_routes(app, OPENAI_API_KEY)
 
 @app.route('/')
 def landing():
