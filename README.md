@@ -60,3 +60,4 @@ A simple web app that generates personalized enrichment activities for dogs base
 - **Database:** None needed for MVP
 - **Payments:** Stripe (to be added)
 # Railway deployment
+# Railway deployment trigger
