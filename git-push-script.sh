@@ -17,39 +17,35 @@ git add .
 echo ""
 echo "💬 Committing changes..."
 # Commit with a descriptive message
-git commit -m "✨ Major design system update + Landing page text fixes
+git commit -m "🚀 Major upgrade: Integrate Supabase AI functions with Flask UI
 
-🎨 Design System Updates:
-- Applied purple gradient background across all pages
-- Added floating geometric shapes animation
-- Implemented glassmorphism cards with backdrop blur
-- Unified color scheme (#2D1B69 for text)
-- Consistent button styles and hover effects
+✨ New Features:
+- Supabase integration with smart fallback to local database
+- Enhanced dog profile building with name field
+- AI-powered activity generation using discover-activities function
+- Activity format conversion between Supabase and Flask
+- Generation method indicator in results
+- Enhanced activity display with benefits and metadata
 
-🐛 Landing Page Fixes:
-- Fixed text cutoff and overlap issues in enrichment cards
-- Improved card layout structure and spacing
-- Optimized text sizes and positioning
-- Better mobile-responsive card design
+🔧 Technical Improvements:
+- New supabase_client.py with full API integration
+- Profile conversion from form data to Supabase format
+- Smart error handling and fallback system
+- Enhanced results template with rich activity data
+- Environment configuration for Supabase credentials
 
-📱 Mobile Improvements:
-- Mobile-first approach with 430px container width
-- Responsive breakpoints at 480px
-- Touch-friendly button sizes and spacing
+🎯 User Experience:
+- Same beautiful glassmorphism UI
+- Smarter, more personalized activity recommendations
+- Dog name personalization
+- Better activity descriptions and benefits
+- Seamless experience with improved backend
 
-🔧 Pages Updated:
-- Landing page: Enhanced hero + fixed card text layout
-- Library page: Consistent styling with improved search/filter UI
-- Form page (index.html): Complete redesign to match design system
-- Results page: Unified styling
-- Import page: Consistent design patterns
-
-🌟 User Experience:
-- Smooth animations and transitions
-- Professional glassmorphism aesthetic
-- Consistent visual hierarchy
-- Fixed text readability issues
-- Improved accessibility and usability"
+📊 System Architecture:
+- Cloud-based AI generation with local fallback
+- Scalable Supabase backend integration
+- Maintained Flask frontend for familiar interface
+- Enhanced data models for richer activity content"
 
 echo ""
 echo "🌐 Pushing to GitHub..."

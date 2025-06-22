@@ -83,32 +83,35 @@ class EnrichmentDatabase:
         
         # Extract profile info
         breed_size = self.extract_breed_size(dog_profile.get('breed', ''))
-        age_group = dog_profile.get('age', '')
+        age_group = self.extract_age_group(dog_profile.get('age', ''))
         energy_level = dog_profile.get('energy_level', '')
-        weather = dog_profile.get('weather', '')
+        weather = self.extract_weather_preference(dog_profile.get('weather', ''))
         enrichment_type = dog_profile.get('enrichment_type', '')
         
         print(f"DEBUG: Extracted - breed_size: {breed_size}, enrichment_type: {enrichment_type}")
         
         # Create search patterns - fix category matching
-        if 'Mental' in enrichment_type:
-            category_pattern = '%Mental%'
-        elif 'Physical' in enrichment_type:
-            category_pattern = '%Physical%'
-        elif 'Social' in enrichment_type:
-            category_pattern = '%Social%'
-        elif 'Environmental' in enrichment_type:
-            category_pattern = '%Environmental%'
-        elif 'Instinctual' in enrichment_type:
-            category_pattern = '%Instinctual%'
-        elif 'Passive' in enrichment_type:
-            category_pattern = '%Passive%'
+        enrichment_type_lower = enrichment_type.lower()
+        if 'mental' in enrichment_type_lower:
+            category_pattern = 'Mental'
+        elif 'physical' in enrichment_type_lower:
+            category_pattern = 'Physical'
+        elif 'social' in enrichment_type_lower:
+            category_pattern = 'Social'
+        elif 'environmental' in enrichment_type_lower:
+            category_pattern = 'Environmental'
+        elif 'instinctual' in enrichment_type_lower:
+            category_pattern = 'Instinctual'
+        elif 'passive' in enrichment_type_lower:
+            category_pattern = 'Passive'
+        elif 'mixed' in enrichment_type_lower:
+            category_pattern = '%'  # Match any category for mixed
         else:
-            category_pattern = f"%{enrichment_type.split(' - ')[0] if ' - ' in enrichment_type else enrichment_type}%"
+            category_pattern = 'Mental'  # Default fallback
             
         breed_pattern = f"%{breed_size}%"
-        age_pattern = f"%{age_group.split(' ')[0] if ' ' in age_group else age_group}%"
-        weather_pattern = f"%{weather.split(' - ')[0] if ' - ' in weather else 'Any'}%"
+        age_pattern = f"%{age_group}%"
+        weather_pattern = f"%{weather}%"
         
         print(f"DEBUG: Search patterns - category: {category_pattern}, breed: {breed_pattern}")
         
@@ -120,22 +123,37 @@ class EnrichmentDatabase:
             print(f"  - {activity[0]} ({activity[1]})")
         
         # Build dynamic query based on preferences
-        query = '''
-            SELECT * FROM activities 
-            WHERE category LIKE ? 
-            AND (breed_sizes LIKE ? OR breed_sizes LIKE ?)
-            AND (age_groups LIKE ? OR age_groups LIKE ?)
-            AND (weather_suitable LIKE ? OR weather_suitable LIKE ?)
-            ORDER BY RANDOM()
-            LIMIT ?
-        '''
-        
-        cursor.execute(query, (
-            category_pattern, breed_pattern, '%All%',
-            age_pattern, '%All%', 
-            weather_pattern, '%Any%',
-            limit
-        ))
+        if category_pattern == '%':  # Mixed enrichment - get variety
+            query = '''
+                SELECT * FROM activities 
+                WHERE (breed_sizes LIKE ? OR breed_sizes LIKE ?)
+                AND (age_groups LIKE ? OR age_groups LIKE ?)
+                AND (weather_suitable LIKE ? OR weather_suitable LIKE ?)
+                ORDER BY RANDOM()
+                LIMIT ?
+            '''
+            cursor.execute(query, (
+                breed_pattern, '%All%',
+                age_pattern, '%All%', 
+                weather_pattern, '%Any%',
+                limit
+            ))
+        else:  # Specific category
+            query = '''
+                SELECT * FROM activities 
+                WHERE category = ? 
+                AND (breed_sizes LIKE ? OR breed_sizes LIKE ?)
+                AND (age_groups LIKE ? OR age_groups LIKE ?)
+                AND (weather_suitable LIKE ? OR weather_suitable LIKE ?)
+                ORDER BY RANDOM()
+                LIMIT ?
+            '''
+            cursor.execute(query, (
+                category_pattern, breed_pattern, '%All%',
+                age_pattern, '%All%', 
+                weather_pattern, '%Any%',
+                limit
+            ))
         
         results = cursor.fetchall()
         print(f"DEBUG: Found {len(results)} matching activities")
@@ -160,16 +178,43 @@ class EnrichmentDatabase:
     
     def extract_breed_size(self, breed_str: str) -> str:
         """Extract size from breed string"""
-        if 'Small' in breed_str:
+        breed_lower = breed_str.lower()
+        if 'small' in breed_lower:
             return 'Small'
-        elif 'Medium' in breed_str:
+        elif 'medium' in breed_lower:
             return 'Medium'
-        elif 'Large' in breed_str:
+        elif 'large' in breed_lower:
             return 'Large'
-        elif 'Giant' in breed_str:
+        elif 'giant' in breed_lower:
             return 'Giant'
         else:
             return 'All'
+    
+    def extract_age_group(self, age_str: str) -> str:
+        """Extract age group from age string"""
+        age_lower = age_str.lower()
+        if 'puppy' in age_lower:
+            return 'Puppy'
+        elif 'young adult' in age_lower:
+            return 'Young adult'
+        elif 'senior' in age_lower:
+            return 'Senior'
+        elif 'adult' in age_lower:
+            return 'Adult'
+        else:
+            return 'All'
+    
+    def extract_weather_preference(self, weather_str: str) -> str:
+        """Extract weather preference from weather string"""
+        weather_lower = weather_str.lower()
+        if 'nice' in weather_lower or 'outdoor' in weather_lower:
+            return 'Nice weather'
+        elif 'indoor' in weather_lower:
+            return 'Indoor weather'
+        elif 'mixed' in weather_lower:
+            return 'Any'
+        else:
+            return 'Any'
     
     def populate_initial_data(self):
         """Populate database with initial set of diverse activities"""
@@ -496,6 +541,270 @@ class EnrichmentDatabase:
                 'breed_sizes': ['All'],
                 'age_groups': ['All'],
                 'tags': ['feeding', 'problem_solving', 'solo']
+            },
+            
+            # ADDITIONAL MENTAL ENRICHMENT ACTIVITIES
+            {
+                'name': 'Hide and Seek Treats',
+                'category': 'Mental',
+                'description': 'Mental stimulation through searching',
+                'materials': ['treats', 'various hiding spots'],
+                'instructions': [
+                    'Start with easy hiding spots your dog can see',
+                    'Hide treats around the room while dog watches',
+                    'Release dog to find treats',
+                    'Gradually make hiding spots more challenging',
+                    'Always praise when treats are found'
+                ],
+                'safety_notes': 'Only hide treats in safe, accessible areas. Avoid small spaces dog could get stuck.',
+                'estimated_time': '10-20 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Low',
+                'weather_suitable': 'Any',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['searching', 'treats', 'indoor']
+            },
+            {
+                'name': 'Cardboard Box Puzzle',
+                'category': 'Mental',
+                'description': 'DIY puzzle using cardboard boxes',
+                'materials': ['cardboard boxes', 'treats', 'tape'],
+                'instructions': [
+                    'Place treats inside small boxes',
+                    'Tape boxes closed lightly',
+                    'Let dog figure out how to open boxes',
+                    'Start with easy-to-open boxes',
+                    'Increase difficulty as dog improves'
+                ],
+                'safety_notes': 'Remove tape pieces dog might swallow. Supervise to prevent eating cardboard.',
+                'estimated_time': '15-25 minutes',
+                'difficulty_level': 'Medium',
+                'energy_required': 'Low',
+                'weather_suitable': 'Any',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['DIY', 'puzzle', 'recycling']
+            },
+            
+            # ADDITIONAL PHYSICAL ENRICHMENT ACTIVITIES
+            {
+                'name': 'Indoor Fetch Variations',
+                'category': 'Physical',
+                'description': 'Fetch games adapted for indoor spaces',
+                'materials': ['soft toys', 'hallway or large room'],
+                'instructions': [
+                    'Use soft toys to prevent damage',
+                    'Play in longest available space',
+                    'Try "sit and stay" before throwing',
+                    'Practice gentle retrieval',
+                    'End before dog gets overstimulated'
+                ],
+                'safety_notes': 'Clear breakable items. Use only soft toys indoors.',
+                'estimated_time': '10-15 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Medium',
+                'weather_suitable': 'Indoor weather',
+                'breed_sizes': ['Small', 'Medium'],
+                'age_groups': ['All'],
+                'tags': ['fetch', 'indoor', 'exercise']
+            },
+            {
+                'name': 'Treadmill Walking',
+                'category': 'Physical',
+                'description': 'Controlled exercise using a treadmill',
+                'materials': ['dog treadmill or human treadmill', 'treats', 'leash'],
+                'instructions': [
+                    'Start with treadmill off, let dog explore',
+                    'Use treats to encourage stepping on',
+                    'Start very slowly once comfortable',
+                    'Stay beside dog at all times',
+                    'Keep sessions short initially'
+                ],
+                'safety_notes': 'Never leave dog unattended. Start extremely slowly. Stop if dog shows stress.',
+                'estimated_time': '5-15 minutes',
+                'difficulty_level': 'Hard',
+                'energy_required': 'Medium',
+                'weather_suitable': 'Indoor weather',
+                'breed_sizes': ['Medium', 'Large'],
+                'age_groups': ['Adult', 'Young adult'],
+                'tags': ['controlled_exercise', 'indoor', 'training']
+            },
+            
+            # ADDITIONAL SOCIAL ENRICHMENT ACTIVITIES
+            {
+                'name': 'Basic Obedience Practice',
+                'category': 'Social',
+                'description': 'Strengthen communication and bonding',
+                'materials': ['treats', 'quiet space'],
+                'instructions': [
+                    'Practice basic commands: sit, stay, come',
+                    'Keep sessions short and positive',
+                    'Reward immediately for correct responses',
+                    'End on a successful command',
+                    'Practice daily for best results'
+                ],
+                'safety_notes': 'Use positive reinforcement only. Stop if dog becomes frustrated.',
+                'estimated_time': '5-10 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Low',
+                'weather_suitable': 'Any',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['training', 'bonding', 'communication']
+            },
+            {
+                'name': 'Gentle Grooming Session',
+                'category': 'Social',
+                'description': 'Bonding through grooming and touch',
+                'materials': ['brush', 'treats', 'calm environment'],
+                'instructions': [
+                    'Start with short, gentle brushing',
+                    'Reward calm behavior with treats',
+                    'Gradually increase session length',
+                    'Include gentle massage',
+                    'Stop if dog becomes uncomfortable'
+                ],
+                'safety_notes': 'Watch for signs of discomfort. Use appropriate brush for coat type.',
+                'estimated_time': '10-20 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Very Low',
+                'weather_suitable': 'Any',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['grooming', 'bonding', 'calm']
+            },
+            
+            # ADDITIONAL ENVIRONMENTAL ENRICHMENT ACTIVITIES
+            {
+                'name': 'Texture Exploration Mat',
+                'category': 'Environmental',
+                'description': 'Sensory exploration with different textures',
+                'materials': ['various textured materials', 'treats', 'large mat or towel'],
+                'instructions': [
+                    'Arrange different textures on mat (carpet, bubble wrap, towels)',
+                    'Hide treats among textures',
+                    'Encourage dog to walk on different areas',
+                    'Let them explore at their own pace',
+                    'Reward brave exploration'
+                ],
+                'safety_notes': 'Ensure all materials are safe and non-toxic. Supervise to prevent eating materials.',
+                'estimated_time': '15-25 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Low',
+                'weather_suitable': 'Any',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['sensory', 'textures', 'exploration']
+            },
+            {
+                'name': 'Window Bird Watching',
+                'category': 'Environmental',
+                'description': 'Mental stimulation through observation',
+                'materials': ['comfortable spot by window', 'bird feeder outside (optional)'],
+                'instructions': [
+                    'Set up comfortable viewing spot by window',
+                    'Encourage dog to look outside',
+                    'Point out birds and movement',
+                    'Let them watch at their own pace',
+                    'Consider adding bird feeder for more activity'
+                ],
+                'safety_notes': 'Ensure window is secure. Monitor for over-excitement.',
+                'estimated_time': '10-30 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Very Low',
+                'weather_suitable': 'Any',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['observation', 'calm', 'visual_stimulation']
+            },
+            
+            # ADDITIONAL INSTINCTUAL ENRICHMENT ACTIVITIES
+            {
+                'name': 'Sock Ball Hunt',
+                'category': 'Instinctual',
+                'description': 'Hunting simulation with safe objects',
+                'materials': ['clean socks', 'treats', 'hiding spots'],
+                'instructions': [
+                    'Put treats inside clean socks and tie off',
+                    'Hide sock balls around house',
+                    'Encourage dog to find and "catch" them',
+                    'Let them shake and carry socks',
+                    'Retrieve socks to prevent destruction'
+                ],
+                'safety_notes': 'Use only clean socks. Remove if dog tries to destroy or swallow.',
+                'estimated_time': '15-20 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Medium',
+                'weather_suitable': 'Any',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['hunting', 'carrying', 'seeking']
+            },
+            {
+                'name': 'Backyard Sniff Safari',
+                'category': 'Instinctual',
+                'description': 'Structured sniffing exploration',
+                'materials': ['leash', 'various scented items', 'treats'],
+                'instructions': [
+                    'Let dog lead with nose during walk',
+                    'Allow extra time for sniffing',
+                    'Hide treats in grass for them to find',
+                    'Encourage investigation of new scents',
+                    'Follow their nose, not a set path'
+                ],
+                'safety_notes': 'Avoid areas with unknown substances. Watch for harmful plants or objects.',
+                'estimated_time': '20-30 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Low',
+                'weather_suitable': 'Nice weather',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['sniffing', 'exploration', 'outdoor']
+            },
+            
+            # ADDITIONAL PASSIVE ENRICHMENT ACTIVITIES
+            {
+                'name': 'Frozen Treat Popsicle',
+                'category': 'Passive',
+                'description': 'Long-lasting frozen enrichment',
+                'materials': ['ice cube trays', 'dog-safe broth', 'small treats'],
+                'instructions': [
+                    'Fill ice cube trays with low-sodium broth',
+                    'Add small treats to each cube',
+                    'Freeze for several hours',
+                    'Give to dog outside or on towel',
+                    'Let them lick and chew at own pace'
+                ],
+                'safety_notes': 'Use only dog-safe ingredients. Give on easy-to-clean surface.',
+                'estimated_time': '30-60 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Very Low',
+                'weather_suitable': 'Any',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['frozen', 'long_lasting', 'cooling']
+            },
+            {
+                'name': 'Benebone or Chew Toy Session',
+                'category': 'Passive',
+                'description': 'Independent chewing satisfaction',
+                'materials': ['appropriate chew toy', 'quiet space'],
+                'instructions': [
+                    'Choose size-appropriate chew toy',
+                    'Give to dog in comfortable spot',
+                    'Let them chew independently',
+                    'Check toy condition periodically',
+                    'Replace when worn down'
+                ],
+                'safety_notes': 'Choose appropriate size. Remove when too small or damaged.',
+                'estimated_time': '20-60 minutes',
+                'difficulty_level': 'Easy',
+                'energy_required': 'Very Low',
+                'weather_suitable': 'Any',
+                'breed_sizes': ['All'],
+                'age_groups': ['All'],
+                'tags': ['chewing', 'independent', 'calming']
             }
         ]
 

@@ -6,6 +6,7 @@ from datetime import datetime
 from enrichment_database import EnrichmentDatabase
 from chat_assistant import add_chat_routes
 from verified_dog_images import get_unique_dog_image, get_multiple_unique_dog_images
+from supabase_client import supabase_client
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your-secret-key-here-change-in-production')  # Change this in production
@@ -241,31 +242,63 @@ def generate_activities():
     weather = request.form['weather']
     enrichment_type = request.form['enrichment_type']
     
-    # Create dog profile for database matching
-    dog_profile = {
+    # Create dog profile for both local and Supabase
+    form_data = {
         'breed': breed,
         'age': age,
         'energy_level': energy_level,
         'weather': weather,
-        'enrichment_type': enrichment_type
+        'enrichment_type': enrichment_type,
+        'dog_name': request.form.get('dog_name', 'My Dog')
     }
     
-    # Save profile to session for future use
-    session['dog_profile'] = dog_profile
+    # Save form data to session
+    session['dog_profile'] = form_data
     
     try:
-        # Get activities from database
-        print(f"DEBUG: Calling database with profile: {dog_profile}")
-        activities = db.find_matching_activities(dog_profile, limit=4)
-        print(f"DEBUG: Database returned {len(activities)} activities")
+        activities = []
         
-        # If we don't have enough activities, fall back to AI
-        if len(activities) < 4:
-            print(f"DEBUG: Only got {len(activities)} from database, falling back to AI")
-            ai_activities = generate_enrichment_activities_ai(dog_profile)
-            activities.extend(ai_activities[:4-len(activities)])
-        else:
-            print("DEBUG: Using database activities only")
+        # Try Supabase first if configured
+        if supabase_client.enabled:
+            print("🚀 Using Supabase for activity generation")
+            
+            # Build Supabase dog profile
+            dog_profile = supabase_client.build_dog_profile(form_data)
+            
+            # Get activities from Supabase
+            result = supabase_client.discover_activities(dog_profile, max_activities=4)
+            
+            if result['success'] and result['activities']:
+                # Convert to Flask format
+                activities = supabase_client.convert_activities_to_flask_format(result['activities'])
+                print(f"✅ Supabase returned {len(activities)} activities")
+            else:
+                print(f"❌ Supabase failed: {result.get('error', 'Unknown error')}")
+                raise Exception(result.get('error', 'Supabase generation failed'))
+        
+        # Fallback to local database if Supabase fails or not configured
+        if not activities:
+            print("🔄 Falling back to local database")
+            
+            # Create legacy profile format
+            legacy_profile = {
+                'breed': breed,
+                'age': age,
+                'energy_level': energy_level,
+                'weather': weather,
+                'enrichment_type': enrichment_type
+            }
+            
+            # Get activities from local database
+            print(f"DEBUG: Calling local database with profile: {legacy_profile}")
+            activities = db.find_matching_activities(legacy_profile, limit=4)
+            print(f"DEBUG: Local database returned {len(activities)} activities")
+            
+            # If still no activities, use AI fallback
+            if len(activities) < 4:
+                print(f"DEBUG: Only got {len(activities)} from local database, falling back to AI")
+                ai_activities = generate_enrichment_activities_ai(legacy_profile)
+                activities.extend(ai_activities[:4-len(activities)])
         
         # Create profile summary for display
         profile_summary = f"Dog breed: {breed}, Age: {age}, Energy level: {energy_level}, Weather: {weather}, Preferred enrichment: {enrichment_type}"
@@ -273,12 +306,17 @@ def generate_activities():
         # Get breed-appropriate UNIQUE image
         breed_image = get_unique_dog_image(f'results_{breed}')
         
+        # Add generation method to session for debugging
+        session['generation_method'] = 'supabase' if supabase_client.enabled and activities else 'local'
+        
         return render_template('results.html', 
                              activities=activities, 
                              dog_profile=profile_summary,
-                             breed_image=breed_image)
+                             breed_image=breed_image,
+                             generation_method=session.get('generation_method', 'unknown'))
     
     except Exception as e:
+        print(f"❌ Error in activity generation: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 def generate_enrichment_activities_ai(dog_profile):
