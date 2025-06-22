@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-AI Chat Modal Routes
+AI Chat Modal Routes - Enhanced with Supabase Integration
 
-Adds intelligent chat support to help users with specific enrichment questions,
-activity breakdowns, and personalized recommendations.
+Adds intelligent chat support using Supabase enrichment-coach function
+with fallback to local chat for reliability.
 """
 
 from flask import request, jsonify, session
@@ -11,6 +11,7 @@ import openai
 import json
 import sqlite3
 from enrichment_database import EnrichmentDatabase
+from supabase_client import supabase_client
 
 class EnrichmentChatAssistant:
     def __init__(self, openai_api_key):
@@ -109,7 +110,71 @@ class EnrichmentChatAssistant:
         return age_keywords + behavior_keywords + activity_keywords + safety_keywords
     
     def generate_chat_response(self, user_message: str, conversation_history: list = None) -> dict:
-        """Generate AI response for enrichment chat"""
+        """Generate AI response using Supabase enrichment-coach with local fallback"""
+        
+        # Try Supabase enrichment-coach first
+        if supabase_client.enabled:
+            try:
+                print("🤖 Using Supabase enrichment-coach for chat")
+                
+                # Get dog profile from session if available
+                dog_profile = self.build_dog_profile_from_session()
+                
+                # Build messages for Supabase
+                messages = []
+                if conversation_history:
+                    messages.extend(conversation_history[-4:])  # Keep last 4 messages
+                messages.append({'role': 'user', 'content': user_message})
+                
+                # Call Supabase enrichment coach
+                result = supabase_client.get_enrichment_coach_advice(
+                    user_message, 
+                    dog_profile,
+                    activity_context=None
+                )
+                
+                if result['success']:
+                    print("✅ Supabase enrichment-coach responded successfully")
+                    return {
+                        'success': True,
+                        'response': result['reply'],
+                        'activities': result.get('activities', []),
+                        'source': 'supabase',
+                        'conversation_id': self.generate_conversation_id()
+                    }
+                else:
+                    print(f"❌ Supabase enrichment-coach failed: {result.get('error')}")
+                    raise Exception(result.get('error', 'Supabase chat failed'))
+                    
+            except Exception as e:
+                print(f"🔄 Supabase chat failed, falling back to local: {str(e)}")
+        
+        # Fallback to local chat system
+        print("🔄 Using local chat system")
+        return self.generate_local_chat_response(user_message, conversation_history)
+    
+    def build_dog_profile_from_session(self) -> dict:
+        """Build dog profile from session data or use defaults"""
+        session_profile = session.get('dog_profile', {})
+        
+        # Convert session data to Supabase format if available
+        if session_profile:
+            return supabase_client.build_dog_profile(session_profile)
+        
+        # Default profile if no session data
+        return {
+            'name': 'Your Dog',
+            'breed': 'Mixed',
+            'size': 'Medium',
+            'age': 3,
+            'ageGroup': 'Adult',
+            'energyLevel': 'Medium',
+            'livingSituation': 'House',
+            'mobilityIssues': []
+        }
+    
+    def generate_local_chat_response(self, user_message: str, conversation_history: list = None) -> dict:
+        """Original local chat response generation"""
         
         # Get relevant activities for context
         relevant_activities = self.get_relevant_activities(user_message, limit=3)
@@ -189,6 +254,7 @@ class EnrichmentChatAssistant:
                 'success': True,
                 'response': ai_response,
                 'relevant_activities': relevant_activities[:2],  # Include top 2 activities
+                'source': 'local',
                 'conversation_id': self.generate_conversation_id()
             }
             
@@ -196,11 +262,90 @@ class EnrichmentChatAssistant:
             return {
                 'success': False,
                 'error': f"Sorry, I'm having trouble right now. Please try again. ({str(e)})",
-                'relevant_activities': relevant_activities[:2] if relevant_activities else []
+                'relevant_activities': relevant_activities[:2] if relevant_activities else [],
+                'source': 'local'
             }
     
     def generate_activity_breakdown(self, activity_name: str) -> dict:
-        """Generate detailed step-by-step breakdown for a specific activity"""
+        """Generate detailed breakdown using Supabase coach with local fallback"""
+        
+        # Try Supabase enrichment-coach for activity-specific help
+        if supabase_client.enabled:
+            try:
+                print(f"🎨 Using Supabase for activity breakdown: {activity_name}")
+                
+                # Get dog profile from session
+                dog_profile = self.build_dog_profile_from_session()
+                
+                # Get activity details for context
+                activity_details = self.get_activity_from_database(activity_name)
+                
+                if activity_details:
+                    # Build activity context for Supabase
+                    activity_context = {
+                        'activityName': activity_details['name'],
+                        'activityPillar': activity_details['category'],
+                        'activityDifficulty': activity_details.get('difficulty_level', 'Medium'),
+                        'activityDuration': activity_details.get('estimated_time', '15 minutes')
+                    }
+                    
+                    # Ask for detailed breakdown
+                    message = f"Please provide a detailed step-by-step breakdown for the '{activity_name}' activity. Include preparation steps, success criteria, troubleshooting tips, and how to make it easier or harder based on my dog's profile."
+                    
+                    result = supabase_client.get_enrichment_coach_advice(
+                        message,
+                        dog_profile,
+                        activity_context=activity_context
+                    )
+                    
+                    if result['success']:
+                        print("✅ Supabase activity breakdown successful")
+                        return {
+                            'success': True,
+                            'activity': activity_details,
+                            'breakdown': result['reply'],
+                            'additional_activities': result.get('activities', []),
+                            'source': 'supabase'
+                        }
+                    else:
+                        print(f"❌ Supabase breakdown failed: {result.get('error')}")
+                        raise Exception(result.get('error', 'Supabase breakdown failed'))
+                else:
+                    print(f"❌ Activity '{activity_name}' not found in database")
+                    raise Exception(f"Activity '{activity_name}' not found")
+                    
+            except Exception as e:
+                print(f"🔄 Supabase breakdown failed, falling back to local: {str(e)}")
+        
+        # Fallback to local breakdown
+        print("🔄 Using local activity breakdown")
+        return self.generate_local_activity_breakdown(activity_name)
+    
+    def get_activity_from_database(self, activity_name: str) -> dict:
+        """Get activity details from local database"""
+        conn = sqlite3.connect(self.db.db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM activities WHERE name = ?", (activity_name,))
+        result = cursor.fetchone()
+        conn.close()
+        
+        if not result:
+            return None
+            
+        return {
+            'name': result[1],
+            'category': result[2],
+            'description': result[4],
+            'materials': json.loads(result[5]),
+            'instructions': json.loads(result[6]),
+            'safety_notes': result[7],
+            'estimated_time': result[8],
+            'difficulty_level': result[9],
+            'energy_required': result[10]
+        }
+    
+    def generate_local_activity_breakdown(self, activity_name: str) -> dict:
+        """Original local activity breakdown generation"""
         
         # Get activity from database
         conn = sqlite3.connect(self.db.db_path)
@@ -212,7 +357,8 @@ class EnrichmentChatAssistant:
         if not result:
             return {
                 'success': False,
-                'error': f"Activity '{activity_name}' not found in our database."
+                'error': f"Activity '{activity_name}' not found in our database.",
+                'source': 'local'
             }
         
         activity = {
@@ -253,7 +399,8 @@ class EnrichmentChatAssistant:
                 return {
                     'success': False,
                     'error': f"OpenAI API not available for activity breakdown.",
-                    'activity': activity
+                    'activity': activity,
+                    'source': 'local'
                 }
             
             response = self.client.ChatCompletion.create(
@@ -269,14 +416,16 @@ class EnrichmentChatAssistant:
             return {
                 'success': True,
                 'activity': activity,
-                'breakdown': response['choices'][0]['message']['content']
+                'breakdown': response['choices'][0]['message']['content'],
+                'source': 'local'
             }
             
         except Exception as e:
             return {
                 'success': False,
                 'error': f"Error generating breakdown: {str(e)}",
-                'activity': activity
+                'activity': activity,
+                'source': 'local'
             }
     
     def generate_conversation_id(self) -> str:
